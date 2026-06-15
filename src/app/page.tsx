@@ -45,12 +45,14 @@ function Avatar({ role }: { role: "user" | "assistant" }) {
 function MessageHeader({
   name,
   time,
+  isUser,
 }: {
   name: string;
   time: string;
+  isUser?: boolean;
 }) {
   return (
-    <div className="mb-2 flex items-baseline gap-4">
+    <div className={`mb-2 flex items-baseline gap-4 ${isUser ? "flex-row-reverse" : "flex-row"}`}>
       <h3 className="text-[15px] font-semibold text-[var(--accent-green)]">
         {name}
       </h3>
@@ -94,15 +96,16 @@ function LiveMessages({
           .join("");
 
         return (
-          <div key={message.id || index} className="flex items-start gap-4">
+          <div key={message.id || index} className={`flex items-start gap-4 ${isUser ? "flex-row-reverse" : "flex-row"}`}>
             <Avatar role={isUser ? "user" : "assistant"} />
-            <div className="min-w-0 flex-1 pt-1">
+            <div className={`min-w-0 flex-1 pt-1 flex flex-col ${isUser ? "items-end text-right" : "items-start text-left"}`}>
               <MessageHeader
                 name={isUser ? "You" : "Athena"}
                 time={new Date().toLocaleTimeString("en-US", {
                   hour: "numeric",
                   minute: "2-digit",
                 })}
+                isUser={isUser}
               />
               <div className="max-w-[820px] whitespace-pre-wrap text-[1rem] leading-relaxed">
                 {text || (isUser ? "" : "No text returned.")}
@@ -174,13 +177,18 @@ export default function DashboardPage() {
 
   return (
     <section className="stone-panel architectural-corners flex h-full min-h-0 flex-col overflow-hidden">
-      <div className="relative z-10 flex-1 overflow-y-auto px-4 pb-5 pt-5 custom-scrollbar min-[720px]:px-6 min-[720px]:pt-7 min-[1500px]:px-8">
+      <div className="relative z-10 flex-1 overflow-y-auto px-4 pb-5 pt-5 custom-scrollbar min-[720px]:px-6 min-[720px]:pt-7 min-[1500px]:px-8 flex flex-col">
         {hasLiveMessages ? (
-          <LiveMessages messages={messages} isLoading={isLoading} />
+          <>
+            <div className="flex-1 shrink min-h-[40px]" />
+            <div className="shrink-0">
+              <LiveMessages messages={messages} isLoading={isLoading} />
+            </div>
+          </>
         ) : (
           <EmptyCommandState />
         )}
-        <div ref={messagesEndRef} />
+        <div ref={messagesEndRef} className="shrink-0" />
       </div>
 
       <div className="relative z-10 px-4 pb-4 min-[720px]:px-6 min-[1500px]:px-8">

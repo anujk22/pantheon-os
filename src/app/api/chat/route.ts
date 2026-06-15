@@ -6,8 +6,16 @@ import { convertToModelMessages, streamText, type UIMessage } from "ai";
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const { messages, id }: { messages: UIMessage[]; id?: string } = await req.json();
+  const { messages: rawMessages, id }: { messages: UIMessage[]; id?: string } = await req.json();
   const sessionId = id || "command-layer";
+
+  // Ensure all messages have parts to prevent crashes in convertToModelMessages and getMessageText
+  const messages = rawMessages.map((m: any) => {
+    if (!m.parts && m.content) {
+      return { ...m, parts: [{ type: "text" as const, text: m.content }] };
+    }
+    return m as UIMessage;
+  });
 
   // Fetch the user's configuration
   const user = await prisma.user.findFirst({
@@ -21,18 +29,51 @@ export async function POST(req: Request) {
     );
   }
 
-  const baseURL = normalizeOpenAIBaseUrl(user.llmBaseUrl);
-  const apiKey = user.llmApiKey || "lm-studio";
+  let baseURL = user.llmBaseUrl ? user.llmBaseUrl.trim() : "";
+  let apiKey = user.llmApiKey ? user.llmApiKey.trim() : "";
+  let modelName = "local-model";
 
-  // Create a custom OpenAI provider instance using the user's config
+  if (user.llmProvider === "openai") {
+    // If base URL is empty or points to default local ports, default to official OpenAI URL
+    if (!baseURL || baseURL.includes("127.0.0.1") || baseURL.includes("localhost")) {
+      baseURL = "https://api.openai.com/v1";
+    }
+    if (!apiKey) {
+      apiKey = process.env.OPENAI_API_KEY || "";
+    }
+    modelName = process.env.OPENAI_MODEL || "gpt-4o-mini";
+  } else if (user.llmProvider === "gemini") {
+    // Google Gemini OpenAI compatibility
+    if (!baseURL || baseURL.includes("127.0.0.1") || baseURL.includes("localhost")) {
+      baseURL = "https://generativelanguage.googleapis.com/v1beta/openai";
+    }
+    if (!apiKey) {
+      apiKey = process.env.GEMINI_API_KEY || "";
+    }
+    modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash";
+  } else {
+    // Default to lmstudio / local
+    if (!baseURL) {
+      baseURL = "http://127.0.0.1:1234/v1";
+    } else {
+      baseURL = baseURL.replace(/\/+$/, "");
+      if (!baseURL.endsWith("/v1")) {
+        baseURL = `${baseURL}/v1`;
+      }
+    }
+    if (!apiKey) {
+      apiKey = "lm-studio";
+    }
+    modelName = process.env.LOCAL_LLM_MODEL || "local-model";
+  }
+
+  // Create a custom OpenAI provider instance using the resolved config
   const customProvider = createOpenAI({
     baseURL,
     apiKey,
   });
 
-  // Use a generic model name; most local providers like LM Studio ignore this 
-  // or use the currently loaded model.
-  const model = customProvider("local-model");
+  const model = customProvider.chat(modelName);
 
   const result = await streamText({
     model,
@@ -71,11 +112,6 @@ export async function POST(req: Request) {
       });
     },
   });
-}
-
-function normalizeOpenAIBaseUrl(baseUrl: string | null | undefined) {
-  const trimmed = (baseUrl || "http://127.0.0.1:1234").trim().replace(/\/+$/, "");
-  return trimmed.endsWith("/v1") ? trimmed : `${trimmed}/v1`;
 }
 
 function getMessageText(message: UIMessage) {

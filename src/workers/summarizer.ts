@@ -46,13 +46,54 @@ async function runMemoryCompression() {
     `;
 
     try {
-      // 2. Call local LLM for compression
-      const llmUrl = process.env.LOCAL_LLM_URL || "http://localhost:8080/v1/chat/completions";
-      const response = await axios.post(llmUrl, {
-        model: "local-model",
-        messages: [{ role: "system", content: prompt }],
-        temperature: 0.3
+      // 2. Fetch the user's configuration
+      const user = await prisma.user.findFirst({
+        where: { email: "local-admin@pantheon.local" },
       });
+
+      let baseURL = "http://localhost:8080/v1";
+      let apiKey = "";
+      let modelName = "local-model";
+
+      if (user) {
+        const userBaseURL = user.llmBaseUrl ? user.llmBaseUrl.trim() : "";
+        const userApiKey = user.llmApiKey ? user.llmApiKey.trim() : "";
+
+        if (user.llmProvider === "openai") {
+          baseURL = (!userBaseURL || userBaseURL.includes("127.0.0.1") || userBaseURL.includes("localhost"))
+            ? "https://api.openai.com/v1"
+            : userBaseURL;
+          apiKey = userApiKey || process.env.OPENAI_API_KEY || "";
+          modelName = process.env.OPENAI_MODEL || "gpt-4o-mini";
+        } else if (user.llmProvider === "gemini") {
+          baseURL = (!userBaseURL || userBaseURL.includes("127.0.0.1") || userBaseURL.includes("localhost"))
+            ? "https://generativelanguage.googleapis.com/v1beta/openai"
+            : userBaseURL;
+          apiKey = userApiKey || process.env.GEMINI_API_KEY || "";
+          modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash";
+        } else {
+          baseURL = userBaseURL || "http://127.0.0.1:1234/v1";
+          baseURL = baseURL.replace(/\/+$/, "");
+          if (!baseURL.endsWith("/v1")) {
+            baseURL = `${baseURL}/v1`;
+          }
+          apiKey = userApiKey || "lm-studio";
+          modelName = process.env.LOCAL_LLM_MODEL || "local-model";
+        }
+      }
+
+      // Call LLM for compression
+      const response = await axios.post(
+        `${baseURL}/chat/completions`,
+        {
+          model: modelName,
+          messages: [{ role: "system", content: prompt }],
+          temperature: 0.3
+        },
+        {
+          headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : {}
+        }
+      );
 
       const compressedText = response.data?.choices?.[0]?.message?.content;
 

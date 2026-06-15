@@ -1,50 +1,75 @@
 "use client";
 
-import React, { useMemo } from 'react';
-import ForceGraph3D from 'react-force-graph-3d';
+import React, { useMemo } from "react";
+import ForceGraph3D from "react-force-graph-3d";
+import { Brain } from "lucide-react";
 
-export default function KnowledgeGraph() {
-  const gData = useMemo(() => {
-    // Generate some mock knowledge graph data for Pantheon Memory
-    const nodes = [
-      { id: 'Agentic OS', group: 1, val: 20, color: '#2A4D3E' },
-      { id: 'Prisma DB', group: 2, val: 10, color: '#4A7A60' },
-      { id: 'Next.js', group: 2, val: 10, color: '#4A7A60' },
-      { id: 'Electron', group: 2, val: 10, color: '#4A7A60' },
-      { id: 'Athena', group: 3, val: 15, color: '#C5A059' },
-      { id: 'Apollo', group: 3, val: 15, color: '#C5A059' },
-      { id: 'Zeus', group: 3, val: 25, color: '#1F2924' },
-      { id: 'Memory 12', group: 4, val: 5, color: '#D8D8D0' },
-      { id: 'Memory 14', group: 4, val: 5, color: '#D8D8D0' },
-    ];
+export type KnowledgeGraphMemory = {
+  id: string;
+  content: string;
+  memoryType: string;
+  caseTitle: string | null;
+};
 
-    const links = [
-      { source: 'Agentic OS', target: 'Prisma DB' },
-      { source: 'Agentic OS', target: 'Next.js' },
-      { source: 'Agentic OS', target: 'Electron' },
-      { source: 'Agentic OS', target: 'Zeus' },
-      { source: 'Athena', target: 'Agentic OS' },
-      { source: 'Apollo', target: 'Agentic OS' },
-      { source: 'Memory 12', target: 'Athena' },
-      { source: 'Memory 14', target: 'Apollo' },
-    ];
+export default function KnowledgeGraph({
+  memories,
+}: {
+  memories: KnowledgeGraphMemory[];
+}) {
+  const graphData = useMemo(() => {
+    const nodes = memories.map((memory) => ({
+      id: memory.id,
+      label: memory.content.slice(0, 80),
+      group: memory.memoryType,
+      val: 6,
+      color: memory.caseTitle ? "#34543f" : "#ae9064",
+    }));
 
-    return { nodes, links };
-  }, []);
+    const links = memories
+      .filter((memory) => memory.caseTitle)
+      .map((memory) => ({
+        source: memory.id,
+        target: `case:${memory.caseTitle}`,
+      }));
+
+    const caseNodes = Array.from(
+      new Set(memories.map((memory) => memory.caseTitle).filter(Boolean))
+    ).map((caseTitle) => ({
+      id: `case:${caseTitle}`,
+      label: String(caseTitle),
+      group: "case",
+      val: 10,
+      color: "#20382b",
+    }));
+
+    return { nodes: [...caseNodes, ...nodes], links };
+  }, [memories]);
+
+  if (memories.length === 0) {
+    return (
+      <div className="stone-card flex h-full items-center justify-center p-8 text-center">
+        <div className="max-w-md">
+          <Brain className="mx-auto mb-4 h-10 w-10 text-[var(--accent-green)]" />
+          <h2 className="font-serif text-2xl text-[var(--text-primary)]">
+            No memories saved
+          </h2>
+          <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">
+            The graph will render only after real memories are saved from Inbox
+            triage or another memory workflow.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full h-full rounded-2xl overflow-hidden border border-pantheon-border shadow-inner bg-pantheon-bg relative">
-      <div className="absolute top-4 left-4 z-10 bg-pantheon-surface/80 backdrop-blur px-4 py-2 rounded-lg border border-pantheon-border shadow-sm">
-        <h3 className="font-serif font-bold text-pantheon-text-primary text-sm">Neural Constellation</h3>
-        <p className="text-[10px] text-pantheon-text-secondary uppercase tracking-widest">3D Vector Memory Graph</p>
-      </div>
-      
+    <div className="h-full w-full overflow-hidden rounded-2xl border border-[var(--border-stone)] bg-[var(--bg-marble)] shadow-inner">
       <ForceGraph3D
-        graphData={gData}
-        backgroundColor="#F4F4F0"
-        nodeLabel="id"
+        graphData={graphData}
+        backgroundColor="#fbf8f1"
+        nodeLabel="label"
         nodeColor="color"
-        linkColor={() => 'rgba(42, 77, 62, 0.2)'}
+        linkColor={() => "rgba(52, 84, 63, 0.25)"}
         linkWidth={1}
       />
     </div>

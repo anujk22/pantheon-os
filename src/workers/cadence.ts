@@ -55,7 +55,11 @@ async function runDreamCadence() {
       temperature: 0.7
     });
 
-    const content = response.data?.choices?.[0]?.message?.content || "Mock briefing content (LLM unreachable).";
+    const content = response.data?.choices?.[0]?.message?.content;
+
+    if (!content) {
+      throw new Error("Local LLM returned no briefing content.");
+    }
 
     // 5. Save to MorningBriefing
     // We use an upsert to avoid Unique constraint failure on 'date' if run multiple times
@@ -67,7 +71,7 @@ async function runDreamCadence() {
       update: { content },
       create: {
         date: startOfToday,
-        content: content,
+        content,
       }
     });
     

@@ -18,7 +18,7 @@ import {
 
 const navItems = [
   { icon: Landmark, label: "Command Layer", href: "/", badge: null },
-  { icon: Inbox, label: "Inbox", href: "/inbox", badge: "7" },
+  { icon: Inbox, label: "Inbox", href: "/inbox", badge: null },
   { icon: BriefcaseBusiness, label: "Cases", href: "/cases", badge: null },
   { icon: Archive, label: "Artifacts", href: "/artifacts", badge: null },
   { icon: Brain, label: "Memory", href: "/vault", badge: null },

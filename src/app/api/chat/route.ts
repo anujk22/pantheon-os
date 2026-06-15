@@ -15,10 +15,13 @@ export async function POST(req: Request) {
   });
 
   if (!user) {
-    return new Response("User not found or not onboarded", { status: 400 });
+    return new Response(
+      "Pantheon OS is not onboarded. Open Settings and reset onboarding, then enter your LLM provider details.",
+      { status: 400 }
+    );
   }
 
-  const baseURL = user.llmBaseUrl || "http://127.0.0.1:1234/v1";
+  const baseURL = normalizeOpenAIBaseUrl(user.llmBaseUrl);
   const apiKey = user.llmApiKey || "lm-studio";
 
   // Create a custom OpenAI provider instance using the user's config
@@ -33,12 +36,17 @@ export async function POST(req: Request) {
 
   const result = await streamText({
     model,
-    system: "You are Athena, the primary AI commander of Pantheon OS. You are highly intelligent, concise, and helpful. You speak with a confident and slightly mythological tone, but always prioritize utility and direct answers.",
+    system:
+      "You are Athena, the primary AI assistant inside Pantheon OS. Be concise, useful, and honest. Do not claim calendars, cases, files, tools, automations, integrations, or memory are connected unless the user provides that data in the conversation. If a capability is not available in the current chat context, say that it is not connected yet and offer the next concrete step.",
     messages: await convertToModelMessages(messages),
   });
 
   return result.toUIMessageStreamResponse({
     originalMessages: messages,
+    onError: (error) =>
+      error instanceof Error
+        ? `Athena could not reach the configured model: ${error.message}`
+        : "Athena could not reach the configured model.",
     onFinish: async ({ messages }) => {
       await prisma.chatSession.upsert({
         where: { id: sessionId },
@@ -63,6 +71,11 @@ export async function POST(req: Request) {
       });
     },
   });
+}
+
+function normalizeOpenAIBaseUrl(baseUrl: string | null | undefined) {
+  const trimmed = (baseUrl || "http://127.0.0.1:1234").trim().replace(/\/+$/, "");
+  return trimmed.endsWith("/v1") ? trimmed : `${trimmed}/v1`;
 }
 
 function getMessageText(message: UIMessage) {

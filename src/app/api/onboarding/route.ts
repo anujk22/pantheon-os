@@ -10,7 +10,7 @@ export async function POST(req: Request) {
 
     const name = String(payload.name ?? "").trim();
     const llmProvider = String(payload.llmProvider ?? "lmstudio");
-    const llmBaseUrl = String(payload.llmBaseUrl ?? "http://127.0.0.1:1234");
+    const llmBaseUrl = String(payload.llmBaseUrl ?? "http://127.0.0.1:1234/v1");
     const llmApiKey = String(payload.llmApiKey ?? "");
 
     if (!name) {
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       },
       create: {
         name,
-        email: "local-admin@pantheon.local", // placeholder
+        email: "local-admin@pantheon.local",
         llmProvider,
         llmBaseUrl,
         llmApiKey

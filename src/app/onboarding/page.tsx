@@ -60,8 +60,8 @@ export default function OnboardingPage() {
             <input
               name="llmBaseUrl"
               type="text"
-              defaultValue="http://127.0.0.1:1234"
-              placeholder="http://127.0.0.1:1234"
+              defaultValue="http://127.0.0.1:1234/v1"
+              placeholder="http://127.0.0.1:1234/v1"
               className="w-full bg-pantheon-bg border border-pantheon-border rounded-lg outline-none text-pantheon-text-primary placeholder-pantheon-text-secondary/70 px-4 py-3 focus:border-pantheon-emerald-main transition-colors text-sm"
             />
           </div>

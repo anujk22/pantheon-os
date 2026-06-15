@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Cinzel, Inter } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -7,15 +7,16 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 import { ClientShellWrapper } from "@/components/layout/ClientShellWrapper";
 
 export const metadata: Metadata = {
-  title: "Project Pantheon | Agentic OS",
+  title: "Pantheon OS",
   description: "A private, local Agentic Operating System",
 };
 
@@ -27,7 +28,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${playfair.variable} h-full antialiased dark`}
+      className={`${inter.variable} ${cinzel.variable} h-full antialiased`}
     >
       <body className="h-full flex flex-col bg-pantheon-bg text-pantheon-text-primary overflow-hidden font-sans selection:bg-pantheon-emerald-main selection:text-white">
         <ClientShellWrapper>{children}</ClientShellWrapper>

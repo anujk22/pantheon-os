@@ -8,34 +8,27 @@ import { RightSidebar } from "./RightSidebar";
 
 export function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col h-screen w-full bg-[#FAF9F6] text-[#1a1f1c] overflow-hidden font-sans relative">
-      {/* Subtle marble background texture */}
-      <div 
-        className="absolute inset-0 z-0 opacity-40 pointer-events-none mix-blend-multiply"
-        style={{ backgroundImage: "url('/marble.png')", backgroundSize: "cover", backgroundPosition: "center" }}
-      />
-      
-      <div className="relative z-10 flex flex-col h-full w-full p-2 gap-2">
-        {/* TOP BAR */}
-        <TopBar />
-        
-        {/* MAIN CONTENT AREA */}
-        <div className="flex flex-1 overflow-hidden gap-4 px-2 pb-2">
-          
-          {/* FAR LEFT: Nav Menu */}
-          <LeftSidebar />
-          
-          {/* CENTER STAGE: Dashboard/Chat/Status */}
-          <main className="flex-1 flex overflow-hidden">
-            {children}
-          </main>
+    <div className="pantheon-marble h-screen w-full overflow-hidden text-[var(--text-primary)] font-sans relative">
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-65 mix-blend-multiply" />
+      <div className="absolute inset-x-0 top-0 h-6 z-0 border-b border-[rgba(174,144,100,0.22)] bg-[linear-gradient(180deg,rgba(126,103,71,0.17),rgba(255,255,255,0))]" />
+      <div className="absolute inset-x-0 bottom-0 h-7 z-0 border-t border-[rgba(174,144,100,0.22)] bg-[linear-gradient(0deg,rgba(126,103,71,0.14),rgba(255,255,255,0))]" />
 
-          {/* FAR RIGHT: Daily Context */}
-          <RightSidebar />
+      <div className="relative z-10 flex h-full w-full gap-4 p-4 min-[1500px]:p-5">
+        <LeftSidebar />
+
+        <div className="flex min-w-0 flex-1 flex-col gap-3">
+          <TopBar />
+
+          <div className="flex min-h-0 flex-1 gap-4">
+            <main className="min-w-0 flex-1 overflow-hidden">
+              {children}
+            </main>
+
+            <RightSidebar />
+          </div>
+
+          <BottomBar />
         </div>
-
-        {/* BOTTOM BAR */}
-        <BottomBar />
       </div>
     </div>
   );

@@ -1,63 +1,65 @@
 "use client";
 
 import React from "react";
-import { Search, Sun, Moon } from "lucide-react";
 import Image from "next/image";
+import { ChevronDown, Landmark, Search } from "lucide-react";
 
 export function TopBar() {
   return (
-    <header className="h-20 w-full flex items-center justify-between px-4 shrink-0 bg-white/40 backdrop-blur-md rounded-2xl border border-white shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]">
-      
-      {/* Logo Area */}
-      <div className="flex items-center">
-        <div className="w-10 h-10 mr-4 flex items-center justify-center">
-          {/* Ornate P logo */}
-          <div className="w-8 h-8 bg-[#1B3B2B] rounded-sm flex items-center justify-center border border-[#D4AF37]/50 shadow-sm relative overflow-hidden">
-            <div className="absolute inset-0 bg-[url('/marble.png')] opacity-20 mix-blend-overlay"></div>
-            <span className="font-serif font-bold text-white text-lg relative z-10">P</span>
-          </div>
-        </div>
-        <div className="flex flex-col">
-          <h1 className="font-serif text-xl font-bold text-[#1a1f1c] tracking-widest uppercase leading-tight">Emerald Pantheon</h1>
-          <span className="text-[9px] font-bold text-[#C5A059] tracking-[0.2em] uppercase">Agentic OS</span>
+    <header className="relative h-[126px] shrink-0 px-2 pt-3 min-[900px]:h-[112px]">
+      <div className="absolute left-4 top-3 text-[var(--accent-bronze)] min-[900px]:left-[calc((100%_-_365px)/2)] min-[900px]:-translate-x-1/2">
+        <Landmark className="h-6 w-6 stroke-[1.4]" />
+      </div>
+
+      <div className="absolute left-0 right-0 top-12 text-center min-[900px]:right-[365px] min-[900px]:top-10">
+        <h2 className="font-serif text-[2rem] font-medium leading-none tracking-[0.028em] text-[var(--text-primary)] min-[900px]:text-[2.28rem] min-[1500px]:text-[2.58rem]">
+          COMMAND LAYER
+        </h2>
+        <div className="mt-4 flex items-center justify-center gap-4">
+          <div className="carved-rule hidden w-24 min-[640px]:block min-[1500px]:w-32" />
+          <p className="max-w-[21rem] px-4 font-serif text-[0.8rem] tracking-[0.1em] text-[var(--text-primary)] min-[900px]:max-w-none min-[900px]:px-0 min-[900px]:text-[1rem] min-[1500px]:text-[1.08rem]">
+            Direct your agents. Manifest results.
+          </p>
+          <div className="carved-rule hidden w-24 min-[640px]:block min-[1500px]:w-32" />
         </div>
       </div>
 
-      {/* Center Title */}
-      <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
-         <div className="flex items-center">
-            <span className="text-[#C5A059] text-2xl mr-2">🌿</span>
-            <h2 className="font-serif text-3xl font-bold tracking-widest text-[#1a1f1c] uppercase">Mission Control</h2>
-            <span className="text-[#C5A059] text-2xl ml-2">🌿</span>
-         </div>
-         <p className="text-xs font-serif italic text-[#4A5D53] mt-1">Direct your agents. Manifest results.</p>
-      </div>
-
-      {/* Right Controls */}
-      <div className="flex items-center space-x-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-2 w-4 h-4 text-gray-400" />
-          <input 
-            type="text" 
-            placeholder="Search Pantheon OS" 
-            className="w-64 bg-white/60 border border-white shadow-inner rounded-full py-1.5 pl-9 pr-4 text-xs outline-none focus:ring-1 focus:ring-[#1B3B2B] text-[#1a1f1c]"
+      <div className="absolute right-0 top-3 flex items-center gap-2 min-[900px]:top-5 min-[900px]:gap-3">
+        <label className="relative hidden h-10 w-[230px] items-center rounded-[7px] border border-[rgba(174,144,100,0.28)] bg-[rgba(255,253,248,0.62)] px-3 shadow-[inset_0_1px_2px_rgba(72,56,38,0.05)] transition focus-within:border-[var(--accent-green)] min-[1220px]:flex min-[1500px]:w-[260px]">
+          <Search className="mr-2 h-4 w-4 shrink-0 text-[var(--text-primary)]" />
+          <input
+            type="text"
+            placeholder="Search Pantheon OS"
+            className="min-w-0 flex-1 bg-transparent text-sm text-[var(--text-primary)] outline-none placeholder:text-[#6f665c]"
           />
-        </div>
-        
-        <div className="flex bg-white/60 rounded-full border border-white p-1 shadow-inner">
-          <button className="p-1.5 bg-white shadow-sm rounded-full text-[#1B3B2B]"><Sun className="w-4 h-4" /></button>
-          <button className="p-1.5 text-gray-400 hover:text-[#1B3B2B] rounded-full"><Moon className="w-4 h-4" /></button>
+          <span className="ml-2 rounded border border-[rgba(174,144,100,0.25)] bg-[rgba(255,255,255,0.5)] px-1.5 py-0.5 text-[11px] text-[var(--text-muted)]">
+            ⌘K
+          </span>
+        </label>
+
+        <div className="flex h-10 items-center gap-2 rounded-[7px] border border-[rgba(174,144,100,0.28)] bg-[rgba(255,253,248,0.62)] px-3 text-[11px] font-semibold tracking-[0.05em] text-[var(--text-primary)] min-[900px]:px-4 min-[900px]:text-xs">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#6f9a72]" />
+          LOCAL MODE
         </div>
 
-        <div className="flex items-center space-x-3 bg-white/40 border border-white p-1.5 pr-4 rounded-full shadow-sm">
-          <div className="text-right">
-            <div className="text-xs font-bold text-[#1a1f1c] tracking-widest uppercase">Athena</div>
-            <div className="text-[9px] text-gray-500 font-serif italic">Strategic Advisor</div>
-          </div>
-          <div className="w-8 h-8 rounded-full overflow-hidden border border-[#D4AF37] relative bg-white">
-            <Image src="/athena.png" alt="Athena" fill className="object-cover" />
-          </div>
-        </div>
+        <button className="hidden h-[52px] items-center gap-3 rounded-full px-1.5 pr-2 text-left transition hover:bg-[rgba(255,253,248,0.5)] min-[520px]:flex">
+          <span className="relative h-12 w-12 overflow-hidden rounded-full border border-[rgba(174,144,100,0.42)] bg-[#eee7dc] shadow-[0_5px_14px_rgba(72,56,38,0.12)]">
+            <Image
+              src="/athena.png"
+              alt="Athena advisor"
+              fill
+              sizes="48px"
+              className="relief-avatar object-cover"
+            />
+          </span>
+          <span className="hidden min-[1320px]:block">
+            <span className="block text-xs font-bold tracking-[0.09em] text-[var(--text-primary)]">
+              ATHENA
+            </span>
+            <span className="block text-xs text-[var(--text-muted)]">Advisor</span>
+          </span>
+          <ChevronDown className="hidden h-4 w-4 text-[var(--text-primary)] min-[1320px]:block" />
+        </button>
       </div>
     </header>
   );

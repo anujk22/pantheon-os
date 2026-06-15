@@ -1,42 +1,167 @@
 @import "tailwindcss";
 
 @theme {
-  --color-pantheon-bg: #F4F4F0;
-  --color-pantheon-surface: #FFFFFF;
-  --color-pantheon-border: #D8D8D0;
-  --color-pantheon-text-primary: #1F2924;
-  --color-pantheon-text-secondary: #5A6960;
-  --color-pantheon-emerald-light: #4A7A60;
-  --color-pantheon-emerald-main: #2A4D3E;
-  --color-pantheon-emerald-dark: #1A3328;
-  --color-pantheon-gold: #C5A059;
+  --color-pantheon-bg: #f4f0e8;
+  --color-pantheon-surface: #fffdf8;
+  --color-pantheon-border: #d8cdbd;
+  --color-pantheon-text-primary: #221f1b;
+  --color-pantheon-text-secondary: #6a6258;
+  --color-pantheon-emerald-light: #58745e;
+  --color-pantheon-emerald-main: #34543f;
+  --color-pantheon-emerald-dark: #20382b;
+  --color-pantheon-gold: #b49a70;
 
-  --font-serif: var(--font-playfair);
+  --font-serif: var(--font-cinzel);
   --font-sans: var(--font-inter);
 }
 
 :root {
-  --background: #FAF9F6;
-  --foreground: #1a1f1c;
+  --bg-limestone: #f3eee5;
+  --bg-marble: #fbf8f1;
+  --surface: rgba(255, 252, 246, 0.82);
+  --surface-raised: rgba(255, 253, 248, 0.94);
+  --text-primary: #221f1b;
+  --text-muted: #6b6257;
+  --accent-bronze: #ae9064;
+  --accent-sage: #6f846f;
+  --accent-green: #34543f;
+  --border-stone: #d8cdbd;
+  --shadow-soft: 0 16px 45px rgba(70, 54, 33, 0.09);
+  --shadow-raised: 0 20px 55px rgba(54, 42, 28, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  --radius-panel: 18px;
+  --radius-card: 10px;
+  --background: var(--bg-limestone);
+  --foreground: var(--text-primary);
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background-color: var(--background);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.9), transparent 30%),
+    radial-gradient(circle at 76% 18%, rgba(190, 171, 139, 0.16), transparent 34%),
+    linear-gradient(135deg, #f8f4ec 0%, #eee7db 48%, #faf7f1 100%);
   color: var(--foreground);
   font-family: var(--font-sans);
 }
 
-/* Custom sleek scrollbar */
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+.pantheon-marble {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.18)),
+    url("/marble.png"),
+    var(--bg-marble);
+  background-size: cover;
+  background-position: center;
+}
+
+.stone-panel {
+  position: relative;
+  border: 1px solid color-mix(in srgb, var(--border-stone) 88%, white);
+  border-radius: var(--radius-panel);
+  background:
+    linear-gradient(145deg, rgba(255, 253, 248, 0.92), rgba(247, 241, 232, 0.78)),
+    url("/marble.png");
+  background-size: cover;
+  background-position: center;
+  box-shadow: var(--shadow-soft);
+}
+
+.stone-panel::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  pointer-events: none;
+  border: 1px solid rgba(174, 144, 100, 0.24);
+  border-radius: calc(var(--radius-panel) - 6px);
+}
+
+.stone-card {
+  border: 1px solid color-mix(in srgb, var(--border-stone) 82%, white);
+  border-radius: var(--radius-card);
+  background:
+    linear-gradient(145deg, rgba(255, 253, 248, 0.92), rgba(247, 242, 234, 0.82)),
+    url("/marble.png");
+  background-size: cover;
+  box-shadow: 0 10px 24px rgba(72, 56, 38, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.86);
+}
+
+.carved-rule {
+  position: relative;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(174, 144, 100, 0.45), transparent);
+}
+
+.carved-rule::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border: 1px solid rgba(174, 144, 100, 0.65);
+  background: #fbf8f1;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.architectural-corners {
+  background:
+    linear-gradient(var(--accent-bronze), var(--accent-bronze)) left 11px top 11px / 22px 1px no-repeat,
+    linear-gradient(var(--accent-bronze), var(--accent-bronze)) left 11px top 11px / 1px 22px no-repeat,
+    linear-gradient(var(--accent-bronze), var(--accent-bronze)) right 11px top 11px / 22px 1px no-repeat,
+    linear-gradient(var(--accent-bronze), var(--accent-bronze)) right 11px top 11px / 1px 22px no-repeat,
+    linear-gradient(var(--accent-bronze), var(--accent-bronze)) left 11px bottom 11px / 22px 1px no-repeat,
+    linear-gradient(var(--accent-bronze), var(--accent-bronze)) left 11px bottom 11px / 1px 22px no-repeat,
+    linear-gradient(var(--accent-bronze), var(--accent-bronze)) right 11px bottom 11px / 22px 1px no-repeat,
+    linear-gradient(var(--accent-bronze), var(--accent-bronze)) right 11px bottom 11px / 1px 22px no-repeat;
+}
+
+.relief-avatar {
+  filter: sepia(0.2) saturate(0.75) contrast(0.96);
+}
+
+.focus-ring {
+  outline: 2px solid color-mix(in srgb, var(--accent-green) 70%, white);
+  outline-offset: 2px;
+}
+
 .custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(27, 59, 43, 0.2);
+  background: rgba(100, 83, 59, 0.22);
   border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(27, 59, 43, 0.4);
+  background: rgba(52, 84, 63, 0.42);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

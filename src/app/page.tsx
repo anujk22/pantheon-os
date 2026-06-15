@@ -1,21 +1,239 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { Loader2, Plus, Globe, Wrench, Send } from "lucide-react";
-import { AgentStatus } from "@/components/layout/AgentStatus";
 import { useChat } from "@ai-sdk/react";
+import {
+  Bell,
+  CalendarDays,
+  Check,
+  ChevronDown,
+  ClipboardCheck,
+  FileText,
+  Grid2X2,
+  ListChecks,
+  Loader2,
+  Paperclip,
+  PenLine,
+  Send,
+  Sparkles,
+  Target,
+  Timer,
+} from "lucide-react";
+
+const planLines = [
+  {
+    icon: Target,
+    label: "Focus:",
+    text: "Deep work in the morning, stakeholder sync in the afternoon.",
+  },
+  {
+    icon: ListChecks,
+    label: "Orion Project:",
+    text: "I've outlined phases, key milestones, and immediate next steps.",
+  },
+  {
+    icon: Bell,
+    label: "Heads up:",
+    text: "Budget review due tomorrow 10:00 AM.",
+  },
+];
+
+const actionChips = [
+  { icon: Timer, label: "Yes, schedule focus time" },
+  { icon: ClipboardCheck, label: "Yes, prepare the brief" },
+  { icon: PenLine, label: "Edit plan" },
+];
+
+function Avatar({ role }: { role: "user" | "assistant" }) {
+  if (role === "user") {
+    return (
+      <div className="grid h-[58px] w-[58px] shrink-0 place-items-center rounded-full border border-[rgba(174,144,100,0.32)] bg-[rgba(250,246,238,0.82)] text-sm text-[var(--text-primary)] shadow-[inset_0_1px_4px_rgba(72,56,38,0.07)]">
+        You
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative h-[58px] w-[58px] shrink-0 overflow-hidden rounded-full border border-[rgba(174,144,100,0.45)] bg-[#eee5d8] shadow-[0_6px_16px_rgba(72,56,38,0.12)]">
+      <Image
+        src="/athena.png"
+        alt="Athena"
+        fill
+        sizes="58px"
+        className="relief-avatar object-cover"
+      />
+    </div>
+  );
+}
+
+function MessageHeader({
+  name,
+  time,
+}: {
+  name: string;
+  time: string;
+}) {
+  return (
+    <div className="mb-2 flex items-baseline gap-4">
+      <h3 className="text-[15px] font-semibold text-[var(--accent-green)]">
+        {name}
+      </h3>
+      <span className="text-sm text-[var(--text-muted)]">{time}</span>
+    </div>
+  );
+}
+
+function ContextPackCard() {
+  return (
+    <div className="stone-card architectural-corners mt-4 max-w-[790px] p-3 min-[720px]:ml-[72px]">
+      <div className="flex flex-col gap-4 rounded-[7px] border border-[rgba(174,144,100,0.18)] bg-[rgba(255,255,255,0.26)] p-3 min-[720px]:flex-row min-[720px]:items-center min-[720px]:gap-5">
+        <div className="relative grid h-[112px] w-[112px] shrink-0 place-items-center rounded-[7px] border border-[rgba(174,144,100,0.24)] bg-[rgba(250,247,240,0.72)]">
+          <FileText className="h-[60px] w-[60px] text-[var(--accent-green)]" />
+          <span className="absolute -bottom-2 -right-2 grid h-9 w-9 place-items-center rounded-full border border-[rgba(174,144,100,0.28)] bg-[#fbf8f1] shadow-[0_7px_16px_rgba(72,56,38,0.14)]">
+            <Check className="h-5 w-5 text-[var(--accent-green)]" />
+          </span>
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="mb-1 flex flex-col gap-1 min-[720px]:flex-row min-[720px]:items-center min-[720px]:justify-between min-[720px]:gap-4">
+            <p className="font-serif text-[0.98rem] font-semibold tracking-[0.12em]">
+              CONTEXT PACK GENERATED
+            </p>
+            <span className="text-sm text-[var(--text-muted)]">9:03 AM</span>
+          </div>
+          <h4 className="text-base font-semibold">Orion Project - Initial Brief</h4>
+          <p className="mt-1 max-w-[430px] text-sm leading-relaxed text-[var(--text-primary)]">
+            Includes project overview, goals, stakeholders, risks, and next actions.
+          </p>
+          <p className="mt-3 text-xs font-medium tracking-[0.12em] text-[var(--text-muted)]">
+            DOCX <span className="px-2">•</span> 14 PAGES <span className="px-2">•</span> 2.4 MB
+          </p>
+        </div>
+
+        <button className="hidden h-10 shrink-0 items-center gap-3 rounded-[6px] border border-[rgba(174,144,100,0.32)] bg-[rgba(255,253,248,0.72)] px-5 text-xs font-bold tracking-[0.14em] text-[var(--accent-green)] transition hover:border-[var(--accent-green)] hover:bg-white min-[760px]:flex">
+          VIEW PACK
+          <span>→</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function MockConversation() {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-start gap-4">
+        <Avatar role="user" />
+        <div className="min-w-0 flex-1 pt-1">
+          <MessageHeader name="You" time="9:02 AM" />
+          <p className="text-[1rem] leading-relaxed">
+            Good morning, Athena. Help me plan my day and organize the Orion Project.
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-start gap-4">
+        <Avatar role="assistant" />
+        <div className="min-w-0 flex-1 pt-1">
+          <MessageHeader name="Athena" time="9:02 AM" />
+          <p className="text-[1rem] leading-relaxed">
+            Good morning. Here&apos;s your plan for today and a starter structure for Orion.
+          </p>
+
+          <div className="mt-5 space-y-3">
+            {planLines.map((line) => (
+              <div key={line.label} className="grid grid-cols-[24px_1fr] items-start gap-2 text-sm leading-relaxed min-[720px]:grid-cols-[24px_112px_1fr]">
+                <line.icon className="mt-0.5 h-5 w-5 text-[var(--accent-green)]" />
+                <span className="font-semibold text-[var(--accent-green)]">{line.label}</span>
+                <span className="col-start-2 min-[720px]:col-start-auto">{line.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <ContextPackCard />
+
+      <div className="flex items-start gap-4 pt-1">
+        <Avatar role="assistant" />
+        <div className="min-w-0 flex-1 pt-1">
+          <MessageHeader name="Athena" time="9:03 AM" />
+          <p className="text-[1rem] leading-relaxed">
+            Shall I block focus time on your calendar and prepare the stakeholder brief?
+          </p>
+
+          <div className="mt-4 flex flex-wrap gap-3">
+            {actionChips.map((chip) => (
+              <button
+                key={chip.label}
+                className="flex h-9 items-center gap-2 rounded-[7px] border border-[rgba(174,144,100,0.32)] bg-[rgba(255,253,248,0.58)] px-4 text-sm font-medium text-[var(--accent-green)] transition hover:border-[var(--accent-green)] hover:bg-white"
+              >
+                <chip.icon className="h-4 w-4" />
+                {chip.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LiveMessages({
+  messages,
+  isLoading,
+}: {
+  messages: ReturnType<typeof useChat>["messages"];
+  isLoading: boolean;
+}) {
+  return (
+    <div className="space-y-5">
+      {messages.map((message, index) => {
+        const isUser = message.role === "user";
+        const text = message.parts
+          .map((part) => (part.type === "text" ? part.text : ""))
+          .join("");
+
+        return (
+          <div key={message.id || index} className="flex items-start gap-4">
+            <Avatar role={isUser ? "user" : "assistant"} />
+            <div className="min-w-0 flex-1 pt-1">
+              <MessageHeader
+                name={isUser ? "You" : "Athena"}
+                time={new Date().toLocaleTimeString("en-US", {
+                  hour: "numeric",
+                  minute: "2-digit",
+                })}
+              />
+              <div className="max-w-[820px] whitespace-pre-wrap text-[1rem] leading-relaxed">
+                {text}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+
+      {isLoading && (
+        <div className="flex items-center gap-4 pl-[72px] text-sm font-medium text-[var(--accent-green)]">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Athena is composing.
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function DashboardPage() {
-  const { messages, sendMessage, status } = useChat({ id: "mission-control" });
+  const { messages, sendMessage, status } = useChat({ id: "command-layer" });
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isLoading = status === "submitted" || status === "streaming";
+  const hasLiveMessages = messages.length > 0;
 
-  // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, isLoading]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -27,105 +245,70 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="h-full w-full flex space-x-4">
-      {/* Agent Status Zone */}
-      <AgentStatus />
-
-      {/* Main Chat Interface */}
-      <div className="flex-1 flex flex-col bg-white/40 backdrop-blur-md rounded-2xl border border-white shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] overflow-hidden relative">
-        
-        {/* Subtle background glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#10B981]/10 rounded-full blur-[100px] pointer-events-none"></div>
-
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 relative z-10 custom-scrollbar">
-          
-          {messages.length === 0 && (
-            <div className="h-full flex flex-col items-center justify-center text-[#4A5D53] space-y-4 opacity-70">
-              <div className="w-16 h-16 rounded-full border border-emerald-500 overflow-hidden shrink-0 shadow-sm relative bg-[#1B3B2B] flex items-center justify-center mb-4">
-                 <Image src="/athena.png" alt="Athena" fill className="object-cover" />
-              </div>
-              <h2 className="text-xl font-serif">Awaiting your command, Commander.</h2>
-              <p className="text-sm">Type a message to begin the integration.</p>
-            </div>
-          )}
-
-          {messages.map((m, index) => (
-            <div key={m.id || index} className={`flex items-start space-x-4 ${m.role === 'user' ? 'justify-end flex-row-reverse space-x-reverse' : 'w-full'}`}>
-              
-              {m.role === 'user' ? (
-                // User Avatar
-                <div className="w-10 h-10 rounded-full border border-[#D4AF37] overflow-hidden shrink-0 shadow-sm relative">
-                   <Image src="/zeus.png" alt="User" fill className="object-cover" />
-                </div>
-              ) : (
-                // Athena Avatar
-                <div className="w-10 h-10 rounded-full border border-emerald-500 overflow-hidden shrink-0 shadow-sm relative bg-[#1B3B2B] flex items-center justify-center">
-                   <Image src="/athena.png" alt="Athena" fill className="object-cover" />
-                </div>
-              )}
-              
-              <div className="flex-1 space-y-2">
-                 {m.role !== 'user' && (
-                   <div className="flex items-center space-x-3 mb-2">
-                     <h4 className="font-bold text-[#1a1f1c] uppercase tracking-widest text-sm">Athena</h4>
-                   </div>
-                 )}
-                 <div className={`p-4 shadow-sm whitespace-pre-wrap text-sm text-[#1a1f1c] ${m.role === 'user' ? 'bg-white border border-gray-100 rounded-2xl rounded-tr-sm inline-block max-w-[80%]' : 'bg-white/80 border border-emerald-100 rounded-2xl'}`}>
-                    {m.parts.map((part, partIndex) =>
-                      part.type === "text" ? (
-                        <React.Fragment key={partIndex}>{part.text}</React.Fragment>
-                      ) : null
-                    )}
-                 </div>
-              </div>
-            </div>
-          ))}
-          
-          {isLoading && messages.length > 0 && messages[messages.length - 1].role === 'user' && (
-            <div className="flex items-start space-x-4 w-full">
-              <div className="w-10 h-10 rounded-full border border-emerald-500 overflow-hidden shrink-0 shadow-sm relative bg-[#1B3B2B] flex items-center justify-center">
-                 <Image src="/athena.png" alt="Athena" fill className="object-cover" />
-              </div>
-              <div className="flex-1 space-y-4">
-                 <div className="flex items-center space-x-3">
-                   <h4 className="font-bold text-[#1a1f1c] uppercase tracking-widest text-sm">Athena</h4>
-                   <div className="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded font-bold border border-emerald-200 flex items-center">
-                     Working <Loader2 className="w-3 h-3 ml-1 animate-spin" />
-                   </div>
-                 </div>
-              </div>
-            </div>
-          )}
-
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Input Area */}
-        <div className="p-4 bg-white/80 border-t border-white backdrop-blur-md relative z-20">
-          <form onSubmit={handleSubmit} className="relative flex items-center bg-white border border-gray-200 rounded-full px-2 py-2 shadow-sm focus-within:border-emerald-500 focus-within:ring-1 focus-within:ring-emerald-500 transition-all">
-             <button type="button" className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-[#1B3B2B] hover:bg-gray-50 transition-colors mx-1">
-               <Plus className="w-5 h-5" />
-             </button>
-             <button type="button" className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-[#1B3B2B] hover:bg-gray-50 transition-colors mx-1">
-               <Globe className="w-4 h-4" />
-             </button>
-             <button type="button" className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-[#1B3B2B] hover:bg-gray-50 transition-colors mx-1">
-               <Wrench className="w-4 h-4" />
-             </button>
-             <input
-               type="text"
-               value={input}
-               onChange={(event) => setInput(event.target.value)}
-               placeholder="Message Athena..."
-               className="flex-1 bg-transparent outline-none text-[#1a1f1c] placeholder-gray-400 px-3 text-sm"
-               disabled={isLoading}
-             />
-             <button type="submit" disabled={isLoading || !(input || "").trim()} className="w-10 h-10 rounded-full bg-[#1B3B2B] hover:bg-[#142A1E] text-white flex items-center justify-center transition-colors shadow-md border border-[#D4AF37]/50 ml-2 disabled:opacity-50 disabled:cursor-not-allowed">
-               {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-4 h-4 ml-1" />}
-             </button>
-          </form>
-        </div>
+    <section className="stone-panel architectural-corners flex h-full min-h-0 flex-col overflow-hidden">
+      <div className="relative z-10 flex-1 overflow-y-auto px-4 pb-5 pt-5 custom-scrollbar min-[720px]:px-6 min-[720px]:pt-7 min-[1500px]:px-8">
+        {hasLiveMessages ? (
+          <LiveMessages messages={messages} isLoading={isLoading} />
+        ) : (
+          <MockConversation />
+        )}
+        <div ref={messagesEndRef} />
       </div>
-    </div>
+
+      <div className="relative z-10 px-4 pb-4 min-[720px]:px-6 min-[1500px]:px-8">
+        <form
+          onSubmit={handleSubmit}
+          className="stone-card architectural-corners p-3 transition focus-within:border-[var(--accent-green)]"
+        >
+          <input
+            type="text"
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            placeholder="Message Athena..."
+            className="mb-3 h-8 w-full bg-transparent px-2 text-base text-[var(--text-primary)] outline-none placeholder:text-[#6f665c]"
+            disabled={isLoading}
+          />
+
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-2 text-[var(--text-primary)] min-[720px]:gap-4">
+              {[Paperclip, Grid2X2, Sparkles, FileText, CalendarDays].map((Icon, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  className="grid h-8 w-8 place-items-center rounded-[6px] transition hover:bg-[rgba(52,84,63,0.08)] hover:text-[var(--accent-green)]"
+                >
+                  <Icon className="h-5 w-5 stroke-[1.7]" />
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center">
+              <button
+                type="submit"
+                disabled={isLoading || !input.trim()}
+                className="flex h-11 w-11 items-center justify-center gap-3 rounded-l-[7px] border border-[rgba(174,144,100,0.34)] bg-[rgba(255,253,248,0.72)] text-sm font-bold tracking-[0.22em] text-[var(--accent-green)] shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] transition hover:border-[var(--accent-green)] hover:bg-white disabled:opacity-50 min-[720px]:w-auto min-[720px]:justify-start min-[720px]:px-6"
+              >
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4 fill-[var(--accent-green)]" />
+                )}
+                <span className="hidden min-[720px]:inline">SEND</span>
+              </button>
+              <button
+                type="button"
+                className="grid h-11 w-[52px] place-items-center rounded-r-[7px] border-y border-r border-[rgba(32,56,43,0.36)] bg-[var(--accent-green)] text-white transition hover:bg-[#20382b]"
+              >
+                <ChevronDown className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <p className="mt-2 text-center text-xs text-[var(--text-muted)]">
+          Athena can make mistakes. Verify important information.
+        </p>
+      </div>
+    </section>
   );
 }

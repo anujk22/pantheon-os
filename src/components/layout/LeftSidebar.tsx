@@ -4,82 +4,111 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { 
-  Building2, 
+import {
+  Archive,
+  Boxes,
+  Brain,
+  Building2,
+  BriefcaseBusiness,
   Inbox,
-  MessageSquare, 
-  Archive, 
-  Brain, 
-  Users, 
-  Link as LinkIcon,
-  Zap,
-  BarChart,
-  Settings
+  Landmark,
+  Network,
+  Settings,
 } from "lucide-react";
+
+const navItems = [
+  { icon: Landmark, label: "Command Layer", href: "/", badge: null },
+  { icon: Inbox, label: "Inbox", href: "/inbox", badge: "7" },
+  { icon: BriefcaseBusiness, label: "Cases", href: "/cases", badge: null },
+  { icon: Archive, label: "Artifacts", href: "/artifacts", badge: null },
+  { icon: Brain, label: "Memory", href: "/vault", badge: null },
+  { icon: Network, label: "Integrations", href: "/integrations", badge: null },
+  { icon: Settings, label: "Settings", href: "/settings", badge: null },
+];
 
 export function LeftSidebar() {
   const pathname = usePathname();
 
-  const navItems = [
-    { icon: Building2, label: "Mission Control", href: "/" },
-    { icon: Inbox, label: "Command Inbox", href: "/inbox" },
-    { icon: MessageSquare, label: "Chat", href: "/chat" },
-    { icon: Archive, label: "Artifacts", href: "/artifacts" },
-    { icon: Brain, label: "Memory", href: "/vault" },
-    { icon: Users, label: "Agents", href: "/agents" },
-    { icon: LinkIcon, label: "Integrations", href: "/integrations" },
-    { icon: Zap, label: "Automations", href: "/automations" },
-    { icon: BarChart, label: "Analytics", href: "/analytics" },
-    { icon: Settings, label: "Settings", href: "/settings" },
-  ];
-
   return (
-    <aside className="w-64 h-full flex flex-row shrink-0">
-      
-      {/* Far Left Column Graphic */}
-      <div className="w-16 h-full border-r border-[#D4AF37]/20 relative overflow-hidden flex flex-col items-center py-4 bg-gradient-to-b from-white/60 to-white/20 rounded-l-2xl shadow-inner">
-        <Image 
-          src="/column.png" 
-          alt="Ionic Column" 
-          fill
-          className="object-cover object-left opacity-90 mix-blend-multiply"
-        />
-      </div>
+    <aside className="stone-panel architectural-corners hidden h-full w-[306px] shrink-0 overflow-hidden px-5 pb-5 pt-7 min-[980px]:flex min-[1500px]:w-[332px]">
+      <div className="relative z-10 flex h-full w-full flex-col">
+        <div className="mb-8 flex flex-col items-center">
+          <div className="mb-3 flex items-center gap-4">
+            <div className="relative flex h-[52px] w-[52px] items-center justify-center text-[var(--accent-bronze)]">
+              <Building2 className="h-10 w-10 stroke-[1.35]" />
+              <div className="absolute inset-x-1 bottom-0 h-px bg-[rgba(174,144,100,0.38)]" />
+            </div>
+            <h1 className="whitespace-nowrap font-serif text-[1.34rem] font-medium tracking-[0.085em] text-[var(--text-primary)] min-[1500px]:text-[1.48rem]">
+              PANTHEON OS
+            </h1>
+          </div>
+          <div className="carved-rule w-36" />
+        </div>
 
-      {/* Nav Menu */}
-      <div className="flex-1 flex flex-col p-4 bg-white/60 backdrop-blur-md rounded-r-2xl border border-white shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]">
-        <nav className="flex-1 space-y-1.5 mt-4">
+        <nav className="space-y-2">
           {navItems.map((item) => {
-            const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
-            
+            const isActive =
+              pathname === item.href ||
+              (item.href !== "/" && pathname.startsWith(item.href));
+
             return (
-              <Link key={item.label} href={item.href}>
-                <div className={`flex items-center space-x-3 px-4 py-2.5 rounded-xl transition-all group cursor-pointer ${
-                  isActive 
-                    ? "bg-[#1B3B2B] text-white shadow-md border border-[#1B3B2B]" 
-                    : "text-[#4A5D53] hover:bg-white/80 hover:shadow-sm border border-transparent"
-                }`}>
-                  <item.icon className={`w-4 h-4 ${isActive ? "text-[#C5A059]" : "text-[#4A5D53] group-hover:text-[#1B3B2B]"} transition-colors`} />
-                  <span className="font-semibold text-[13px] tracking-wide">{item.label}</span>
-                </div>
+              <Link
+                key={item.label}
+                href={item.href}
+                className={`group flex h-[52px] items-center gap-3 rounded-[8px] border px-4 text-[15px] transition-all duration-200 ${
+                  isActive
+                    ? "border-[rgba(174,144,100,0.34)] bg-[rgba(255,253,248,0.72)] text-[var(--accent-green)] shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_8px_18px_rgba(66,52,34,0.06)]"
+                    : "border-transparent text-[var(--text-primary)] hover:border-[rgba(174,144,100,0.22)] hover:bg-[rgba(255,255,255,0.38)]"
+                }`}
+              >
+                <item.icon
+                  className={`h-5 w-5 shrink-0 stroke-[1.45] ${
+                    isActive
+                      ? "text-[var(--accent-green)]"
+                      : "text-[rgba(34,31,27,0.64)] group-hover:text-[var(--accent-green)]"
+                  }`}
+                />
+                <span className="min-w-0 flex-1 truncate font-medium">
+                  {item.label}
+                </span>
+                {item.badge ? (
+                  <span className="grid h-7 w-7 place-items-center rounded-full border border-[rgba(174,144,100,0.32)] bg-[rgba(255,255,255,0.52)] text-sm text-[var(--accent-green)]">
+                    {item.badge}
+                  </span>
+                ) : isActive ? (
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-green)]" />
+                ) : null}
               </Link>
             );
           })}
         </nav>
 
-        <div className="mt-auto pt-6">
-          <div className="flex items-center p-3 bg-white/80 rounded-xl border border-white shadow-sm cursor-pointer hover:shadow-md transition-shadow">
-            <div className="w-10 h-10 rounded-full border border-[#D4AF37] overflow-hidden bg-[#F4F4F0] flex justify-center items-center mr-3 relative">
-               <Image src="/zeus.png" alt="Demigod" fill className="object-cover" />
+        <div className="mt-auto flex flex-col items-center">
+          <div className="relative mb-6 h-[178px] w-[178px]">
+            <div className="absolute inset-0 rounded-full border border-[rgba(174,144,100,0.24)] bg-[rgba(255,255,255,0.28)] shadow-[inset_0_2px_12px_rgba(104,83,57,0.12)]" />
+            <div className="absolute inset-3 rounded-full border border-[rgba(174,144,100,0.38)] bg-[rgba(246,239,228,0.88)] shadow-[0_12px_24px_rgba(72,56,38,0.12)]" />
+            <div className="absolute inset-6 overflow-hidden rounded-full border border-[rgba(174,144,100,0.42)] bg-[#efe7da]">
+              <Image
+                src="/athena.png"
+                alt="Athena relief"
+                fill
+                sizes="160px"
+                className="relief-avatar object-cover object-center opacity-90"
+              />
             </div>
-            <div>
-              <p className="text-[13px] font-bold text-[#1a1f1c]">Demigod</p>
-              <p className="text-[10px] text-gray-500 font-serif italic">Architect Tier</p>
-            </div>
+            <Boxes className="absolute -bottom-1 left-3 h-9 w-9 rotate-[-25deg] text-[rgba(174,144,100,0.28)]" />
+            <Boxes className="absolute -bottom-1 right-3 h-9 w-9 rotate-[25deg] scale-x-[-1] text-[rgba(174,144,100,0.28)]" />
           </div>
+
+          <p className="text-center font-serif text-[0.86rem] font-semibold tracking-[0.23em] text-[var(--text-primary)]">
+            LOCAL FIRST
+          </p>
+          <p className="mt-1 text-center font-serif text-[0.76rem] font-semibold tracking-[0.22em] text-[var(--text-primary)]">
+            PRIVATE BY DESIGN
+          </p>
+          <div className="carved-rule mt-4 w-24" />
         </div>
       </div>
-
     </aside>
   );
 }

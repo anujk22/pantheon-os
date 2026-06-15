@@ -47,7 +47,7 @@ export default async function ChatPage() {
                 No persisted conversations
               </h2>
               <p className="text-sm text-[#4A5D53] mt-2 max-w-md">
-                Start a conversation in Mission Control and completed turns will
+                Start a conversation in Command Layer and completed turns will
                 appear here.
               </p>
             </div>

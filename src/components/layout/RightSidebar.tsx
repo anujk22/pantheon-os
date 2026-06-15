@@ -2,104 +2,123 @@
 
 import React from "react";
 import Image from "next/image";
-import { ChevronRight, ChevronLeft, Calendar as CalendarIcon } from "lucide-react";
+import { CalendarDays, ChevronRight, ShieldCheck, SunMedium } from "lucide-react";
+
+const calendarItems = [
+  ["9:00 AM", "Deep Work"],
+  ["11:30 AM", "Budget Review Prep"],
+  ["2:00 PM", "Stakeholder Sync"],
+  ["4:30 PM", "Focus Block"],
+];
 
 export function RightSidebar() {
-  const today = new Date().toLocaleDateString("en-US", { weekday: 'long', month: 'short', day: 'numeric' });
-
   return (
-    <aside className="w-80 h-full flex flex-col shrink-0 space-y-4 overflow-y-auto pr-2 pb-4">
-      
-      <div className="mb-2 pl-2">
-         <h3 className="font-bold text-[13px] tracking-widest text-[#1a1f1c] uppercase">Daily Context</h3>
-      </div>
-
-      {/* Morning Briefing Card */}
-      <div className="bg-white/60 backdrop-blur-md rounded-2xl border border-white shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] p-5 relative overflow-hidden group cursor-pointer hover:shadow-md transition-shadow">
-        <div className="absolute right-0 top-0 w-32 h-full opacity-60 mix-blend-multiply transition-transform group-hover:scale-105 duration-700">
-           <Image src="/apollo.png" alt="Statue" fill className="object-cover object-top" />
+    <aside className="hidden h-full w-[316px] shrink-0 flex-col gap-2 overflow-y-auto pb-1 min-[1180px]:flex min-[1500px]:w-[348px]">
+      <section className="stone-card architectural-corners relative shrink-0 overflow-hidden p-5">
+        <div className="absolute right-[-18px] top-11 h-[124px] w-24 opacity-24 min-[1500px]:h-[138px] min-[1500px]:w-28">
+          <Image
+            src="/column.png"
+            alt=""
+            fill
+            sizes="130px"
+            className="object-cover object-left mix-blend-multiply"
+          />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-transparent"></div>
-        
+
         <div className="relative z-10">
-          <div className="flex items-center text-[#C5A059] mb-3">
-             <span className="text-xl mr-2">☀</span>
-             <h4 className="font-serif font-bold text-[#1a1f1c] text-lg">Morning Briefing</h4>
+          <div className="mb-3 flex items-center gap-3">
+            <SunMedium className="h-5 w-5 text-[var(--accent-bronze)]" />
+            <h3 className="font-serif text-[1.02rem] font-semibold tracking-[0.16em]">
+              MORNING BRIEF
+            </h3>
           </div>
-          <p className="text-sm text-[#4A5D53] leading-relaxed mb-1">Good morning, Commander.</p>
-          <p className="text-[12px] text-gray-500 max-w-[180px]">No briefing has been generated for {today} yet. Use the chat to trigger a briefing.</p>
+
+          <h4 className="mb-2 text-sm font-semibold">Top Priorities</h4>
+          <ol className="space-y-1.5 text-[13px] leading-snug text-[var(--text-primary)]">
+            <li className="grid grid-cols-[18px_1fr] gap-2">
+              <span>1.</span>
+              <span>Deep Work: Orion Project</span>
+            </li>
+            <li className="grid grid-cols-[18px_1fr] gap-2">
+              <span>2.</span>
+              <span>Review Budget &amp; Forecasts</span>
+            </li>
+            <li className="grid grid-cols-[18px_1fr] gap-2">
+              <span>3.</span>
+              <span>Stakeholder Sync at 2 PM</span>
+            </li>
+          </ol>
+
+          <div className="my-3 h-px bg-[rgba(174,144,100,0.2)]" />
+
+          <div className="mb-3 grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 text-[13px]">
+            <p className="font-semibold text-[#a63f32]">Hard Deadline</p>
+            <p className="text-right text-[#a63f32]">Tomorrow 10:00 AM</p>
+            <p>Budget Review</p>
+          </div>
+
+          <div className="border-t border-[rgba(174,144,100,0.18)] pt-2 text-[13px] leading-relaxed">
+            <p className="font-semibold">Strategic Note</p>
+            <p>Focus on high-leverage work. Protect your deep work blocks.</p>
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* Google Calendar Card */}
-      <div className="bg-white/60 backdrop-blur-md rounded-2xl border border-white shadow-sm p-4">
-        <div className="flex justify-between items-center mb-4">
-           <div className="flex items-center">
-             <div className="w-6 h-6 bg-white rounded shadow-sm flex items-center justify-center mr-2 border border-gray-100">
-                <CalendarIcon className="w-3 h-3 text-blue-500" />
-             </div>
-             <h4 className="font-semibold text-sm text-[#1a1f1c]">Calendar</h4>
-           </div>
-           <div className="flex items-center space-x-2">
-             <span className="bg-gray-100 text-gray-600 text-[10px] px-2 py-1 rounded-md font-medium">Today</span>
-             <ChevronLeft className="w-4 h-4 text-gray-300 cursor-not-allowed" />
-             <ChevronRight className="w-4 h-4 text-gray-300 cursor-not-allowed" />
-           </div>
+      <section className="stone-card architectural-corners p-4">
+        <div className="mb-3 flex items-center gap-3">
+          <CalendarDays className="h-5 w-5 text-[var(--accent-bronze)]" />
+          <h3 className="font-serif text-[1.02rem] font-semibold tracking-[0.16em]">
+            TODAY&apos;S CALENDAR
+          </h3>
         </div>
 
-        <div className="py-8 flex flex-col items-center justify-center text-center opacity-70">
-           <CalendarIcon className="w-8 h-8 text-gray-300 mb-2" />
-           <p className="text-xs font-medium text-gray-500">No events scheduled</p>
-           <p className="text-[10px] text-gray-400 mt-1">Hook up Google Calendar in Integrations</p>
-        </div>
-      </div>
-
-      {/* Active Case Board */}
-      <div className="bg-white/60 backdrop-blur-md rounded-2xl border border-white shadow-sm p-4 flex-1 flex flex-col">
-        <div className="flex justify-between items-center mb-4 border-b border-gray-100 pb-3">
-           <div className="flex items-center">
-             <div className="text-[#D4AF37] mr-2">♞</div>
-             <h4 className="font-semibold text-sm text-[#1a1f1c]">Active Case Board</h4>
-           </div>
-           <button className="text-[10px] font-bold text-gray-500 hover:text-[#1B3B2B] uppercase tracking-wider flex items-center">
-             View in Tasks <ChevronRight className="w-3 h-3 ml-1" />
-           </button>
+        <div className="space-y-2">
+          {calendarItems.map(([time, label]) => (
+            <div key={time} className="grid grid-cols-[66px_14px_1fr] items-center gap-2 text-[13px]">
+              <span>{time}</span>
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-sage)]" />
+              <span>{label}</span>
+            </div>
+          ))}
         </div>
 
-        <div className="grid grid-cols-3 gap-3 flex-1">
-           {/* To Do */}
-           <div className="flex flex-col">
-             <div className="flex justify-between items-center mb-2">
-               <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">To Do</span>
-               <span className="text-[10px] font-medium text-gray-400">0</span>
-             </div>
-             <div className="flex-1 flex flex-col border border-dashed border-gray-200 rounded-lg bg-gray-50/50 p-2 items-center justify-center min-h-[100px]">
-                <button className="text-[10px] text-gray-400 hover:text-[#1B3B2B] font-medium">+ Add Task</button>
-             </div>
-           </div>
+        <button className="mt-3 flex w-full items-center justify-between text-sm font-medium text-[var(--accent-green)] transition hover:text-[var(--text-primary)]">
+          <span>View full calendar</span>
+          <ChevronRight className="h-4 w-4" />
+        </button>
+      </section>
 
-           {/* In Progress */}
-           <div className="flex flex-col">
-             <div className="flex justify-between items-center mb-2">
-               <span className="text-[10px] font-bold text-[#C5A059] uppercase tracking-widest">In Progress</span>
-               <span className="text-[10px] font-medium text-[#C5A059]">0</span>
-             </div>
-             <div className="flex-1 border border-dashed border-gray-200 rounded-lg bg-gray-50/50 p-2 min-h-[100px]">
-             </div>
-           </div>
-
-           {/* Done */}
-           <div className="flex flex-col">
-             <div className="flex justify-between items-center mb-2">
-               <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Done</span>
-               <span className="text-[10px] font-medium text-emerald-600">0</span>
-             </div>
-             <div className="flex-1 border border-dashed border-gray-200 rounded-lg bg-gray-50/50 p-2 min-h-[100px]">
-             </div>
-           </div>
+      <section className="stone-card architectural-corners p-4">
+        <div className="mb-3 flex items-center gap-3">
+          <ShieldCheck className="h-5 w-5 text-[var(--accent-bronze)]" />
+          <h3 className="font-serif text-[1.02rem] font-semibold tracking-[0.16em]">
+            ACTIVE CASE
+          </h3>
         </div>
-      </div>
 
+        <div className="mb-3 flex items-start justify-between gap-4">
+          <div>
+            <h4 className="text-lg font-semibold">Orion Project</h4>
+            <p className="mt-2 text-sm">
+              <span className="font-semibold">Phase:</span> Discovery
+            </p>
+          </div>
+          <span className="rounded-[5px] border border-[rgba(174,144,100,0.28)] bg-[rgba(255,253,248,0.72)] px-3 py-2 text-xs font-bold tracking-[0.08em] text-[var(--accent-green)]">
+            ACTIVE
+          </span>
+        </div>
+
+        <div className="mb-3 grid grid-cols-[1fr_auto] items-center gap-3">
+          <div className="h-2 overflow-hidden rounded-full bg-[rgba(97,84,70,0.14)]">
+            <div className="h-full w-1/3 bg-[var(--accent-green)]" />
+          </div>
+          <span className="text-sm text-[var(--text-muted)]">33%</span>
+        </div>
+
+        <p className="text-sm">
+          <span className="font-semibold">Next:</span> Stakeholder Interviews
+        </p>
+      </section>
     </aside>
   );
 }

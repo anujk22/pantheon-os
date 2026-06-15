@@ -7,7 +7,7 @@ export const maxDuration = 30;
 
 export async function POST(req: Request) {
   const { messages, id }: { messages: UIMessage[]; id?: string } = await req.json();
-  const sessionId = id || "mission-control";
+  const sessionId = id || "command-layer";
 
   // Fetch the user's configuration
   const user = await prisma.user.findFirst({
@@ -42,8 +42,8 @@ export async function POST(req: Request) {
     onFinish: async ({ messages }) => {
       await prisma.chatSession.upsert({
         where: { id: sessionId },
-        update: { title: "Mission Control" },
-        create: { id: sessionId, title: "Mission Control" },
+        update: { title: "Command Layer" },
+        create: { id: sessionId, title: "Command Layer" },
       });
 
       await prisma.chatMessage.deleteMany({

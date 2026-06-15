@@ -34,6 +34,23 @@
   --foreground: var(--text-primary);
 }
 
+.dark {
+  --bg-limestone: #1a1c1a;
+  --bg-marble: #121312;
+  --surface: rgba(20, 22, 20, 0.82);
+  --surface-raised: rgba(30, 32, 30, 0.94);
+  --text-primary: #f0f0f0;
+  --text-muted: #9a9c9a;
+  --accent-bronze: #cda87a;
+  --accent-sage: #8a9a8a;
+  --accent-green: #4ade80;
+  --border-stone: #333833;
+  --shadow-soft: 0 16px 45px rgba(0, 0, 0, 0.5);
+  --shadow-raised: 0 20px 55px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --background: var(--bg-limestone);
+  --foreground: var(--text-primary);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -164,4 +181,35 @@ button:disabled {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+.dark body {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(30, 32, 30, 0.9), transparent 30%),
+    radial-gradient(circle at 76% 18%, rgba(205, 168, 122, 0.08), transparent 34%),
+    linear-gradient(135deg, #121312 0%, #1a1c1a 48%, #0d0f0d 100%);
+}
+
+.dark .stone-panel {
+  background:
+    linear-gradient(145deg, rgba(30, 32, 30, 0.92), rgba(20, 22, 20, 0.78)),
+    url("/marble.png");
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.4);
+}
+
+.dark .stone-card {
+  background:
+    linear-gradient(145deg, rgba(40, 42, 40, 0.92), rgba(25, 27, 25, 0.82)),
+    url("/marble.png");
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.dark .carved-rule::after {
+  background: #121312;
+}
+
+.dark .relief-avatar {
+  filter: sepia(0.1) saturate(0.5) contrast(1.1) brightness(0.85);
 }

@@ -18,9 +18,11 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  systemPrompt  String?
   llmProvider   String?   @default("lmstudio")
   llmBaseUrl    String?
   llmApiKey     String?
+  llmModel      String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -67,6 +69,7 @@ model Event {
 model ChatSession {
   id           String   @id @default(cuid())
   title        String
+  folder       String?
   caseId       String?
   case         Case?    @relation(fields: [caseId], references: [id])
   isSummarized Boolean  @default(false)

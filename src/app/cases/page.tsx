@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { FolderKanban } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import CreateCaseButton from "./CreateCaseButton";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,7 @@ export default async function CasesIndexPage() {
             Real local workspaces created from triaged inbox items.
           </p>
         </div>
+        <CreateCaseButton />
       </header>
 
       <div className="relative z-10 flex-1 overflow-y-auto custom-scrollbar">
@@ -39,7 +41,7 @@ export default async function CasesIndexPage() {
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">
                 Create a case by capturing something in the Inbox, then triaging it to
-                a case. This screen does not invent projects.
+                a case. You can also create one manually.
               </p>
             </div>
           </div>

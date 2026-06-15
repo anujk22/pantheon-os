@@ -2,6 +2,7 @@ import React from "react";
 import { notFound } from "next/navigation";
 import { FolderKanban, MessageSquareOff } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import CaseChat from "./CaseChat";
 
 export const dynamic = "force-dynamic";
 
@@ -52,16 +53,8 @@ export default async function CaseWorkspacePage({
       </header>
 
       <div className="relative z-10 grid min-h-0 flex-1 grid-cols-1 gap-5 overflow-y-auto p-6 custom-scrollbar xl:grid-cols-[340px_1fr]">
-        <aside className="stone-card p-5">
-          <MessageSquareOff className="mb-4 h-7 w-7 text-[var(--accent-green)]" />
-          <h2 className="font-serif text-lg font-semibold text-[var(--text-primary)]">
-            Case Chat Not Connected
-          </h2>
-          <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">
-            This workspace does not have working case-specific chat yet. Use Command
-            Layer for live chat, or wire this case to `/api/chat` before showing a
-            conversation here.
-          </p>
+        <aside className="w-full xl:w-[340px] shrink-0">
+          <CaseChat caseId={caseItem.id} />
         </aside>
 
         <section className="min-w-0">

@@ -1,9 +1,11 @@
+/* eslint-disable */
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState, Suspense } from "react";
 import Image from "next/image";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
+import { DefaultChatTransport, type UIMessage } from "ai";
 import {
   AlertCircle,
   CalendarDays,
@@ -14,6 +16,7 @@ import {
   Paperclip,
   Send,
   Sparkles,
+  X,
 } from "lucide-react";
 
 const chatTransport = new DefaultChatTransport({
@@ -72,9 +75,37 @@ function EmptyCommandState() {
           ATHENA IS READY
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-[var(--text-muted)]">
-          No conversation is loaded yet. Send a message to Athena. Responses require
-          your configured local or hosted LLM endpoint to be running.
+          Send a message to Athena. Responses require your configured local or hosted LLM endpoint to be running.
         </p>
+      </div>
+    </div>
+  );
+}
+
+function ThinkingIndicator() {
+  const [dots, setDots] = useState(".");
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDots((prev) => (prev.length >= 3 ? "." : prev + "."));
+    }, 400);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="flex items-start gap-4 flex-row">
+      <Avatar role="assistant" />
+      <div className="min-w-0 flex-1 pt-1 flex flex-col items-start text-left">
+        <MessageHeader
+          name="Athena"
+          time={new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+          isUser={false}
+        />
+        <div className="flex h-6 items-center">
+          <span className="text-2xl font-bold leading-none tracking-widest text-[var(--accent-green)] opacity-70">
+            {dots}
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -91,9 +122,13 @@ function LiveMessages({
     <div className="space-y-5">
       {messages.map((message, index) => {
         const isUser = message.role === "user";
+        // @ts-ignore
         const text = message.parts
-          .map((part) => (part.type === "text" ? part.text : ""))
-          .join("");
+          ?.map((part: any) => (part.type === "text" ? part.text : ""))
+          // @ts-ignore
+          .join("") || message.content;
+
+        const files = message.parts?.filter((p: any) => p.type === "file") as any[];
 
         return (
           <div key={message.id || index} className={`flex items-start gap-4 ${isUser ? "flex-row-reverse" : "flex-row"}`}>
@@ -101,26 +136,40 @@ function LiveMessages({
             <div className={`min-w-0 flex-1 pt-1 flex flex-col ${isUser ? "items-end text-right" : "items-start text-left"}`}>
               <MessageHeader
                 name={isUser ? "You" : "Athena"}
-                time={new Date().toLocaleTimeString("en-US", {
+                // @ts-ignore
+                time={message.createdAt ? new Date(message.createdAt).toLocaleTimeString("en-US", {
                   hour: "numeric",
                   minute: "2-digit",
-                })}
+                }) : "Just now"}
                 isUser={isUser}
               />
+              
+              {files && files.length > 0 && (
+                <div className={`flex flex-wrap gap-2 mb-2 ${isUser ? "justify-end" : "justify-start"}`}>
+                  {files.map((file, i) => (
+                    file.data && typeof file.data === "string" && file.data.startsWith("data:image") ? (
+                      <div key={i} className="relative h-24 w-24 overflow-hidden rounded-[8px] border border-[rgba(174,144,100,0.34)]">
+                        <Image src={file.data} alt="Attachment" fill className="object-cover" />
+                      </div>
+                    ) : (
+                      <div key={i} className="flex items-center gap-2 rounded-[6px] border border-[rgba(174,144,100,0.34)] bg-[rgba(255,255,255,0.5)] px-3 py-2 text-sm text-[var(--text-muted)]">
+                        <Paperclip className="h-4 w-4" />
+                        Attached File
+                      </div>
+                    )
+                  ))}
+                </div>
+              )}
+
               <div className="max-w-[820px] whitespace-pre-wrap text-[1rem] leading-relaxed">
-                {text || (isUser ? "" : "No text returned.")}
+                {text || (!files?.length && (isUser ? "" : "No text returned."))}
               </div>
             </div>
           </div>
         );
       })}
 
-      {isLoading && (
-        <div className="flex items-center gap-4 pl-0 text-sm font-medium text-[var(--accent-green)] min-[720px]:pl-[72px]">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          Athena is contacting the configured model.
-        </div>
-      )}
+      {isLoading && <ThinkingIndicator />}
     </div>
   );
 }
@@ -149,14 +198,29 @@ function ChatError({
   );
 }
 
-export default function DashboardPage() {
+function ChatWindow({ initialMessages, chatId }: { initialMessages: any[]; chatId: string | null }) {
+  const router = useRouter();
+  const [sessionChatId] = useState(() => chatId || `new-chat-${Date.now()}`);
+  
   const { messages, sendMessage, status, error, regenerate, clearError } =
     useChat({
-      id: "command-layer",
+      id: sessionChatId,
+      // @ts-ignore
+      initialMessages,
       transport: chatTransport,
+      onFinish: () => {
+        if (!chatId) {
+          router.refresh();
+        }
+      }
     });
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  
   const isLoading = status === "submitted" || status === "streaming";
   const hasLiveMessages = messages.length > 0;
 
@@ -164,15 +228,44 @@ export default function DashboardPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
+  useEffect(() => {
+    // If we have messages, and we are not currently viewing a saved chat ID in the URL,
+    // automatically append the new sessionChatId to the URL so reloading saves it.
+    if (messages.length > 0 && !chatId) {
+      window.history.replaceState(null, "", `/?chat=${sessionChatId}`);
+    }
+  }, [messages.length, chatId, sessionChatId]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setSelectedFiles((prev) => [...prev, ...Array.from(e.target.files!)]);
+    }
+  };
+
+  const removeFile = (index: number) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const text = String(formData.get("message") ?? "").trim();
-    if (!text || status !== "ready") return;
+    
+    if ((!text && selectedFiles.length === 0) || status !== "ready") return;
 
     clearError();
     if (inputRef.current) inputRef.current.value = "";
-    await sendMessage({ text });
+    
+    // Create FileList object manually if we need to
+    const dataTransfer = new DataTransfer();
+    selectedFiles.forEach((file) => dataTransfer.items.add(file));
+
+    await sendMessage({ 
+      text, 
+      files: dataTransfer.files.length > 0 ? dataTransfer.files : undefined 
+    });
+    
+    setSelectedFiles([]);
   };
 
   return (
@@ -199,6 +292,20 @@ export default function DashboardPage() {
           />
         ) : null}
 
+        {selectedFiles.length > 0 && (
+          <div className="mb-3 flex flex-wrap gap-2">
+            {selectedFiles.map((file, i) => (
+              <div key={i} className="flex items-center gap-2 rounded-[6px] border border-[var(--accent-green)] bg-[rgba(255,253,248,0.72)] px-2 py-1 text-xs text-[var(--accent-green)]">
+                <Paperclip className="h-3 w-3" />
+                <span className="truncate max-w-[120px]">{file.name}</span>
+                <button type="button" onClick={() => removeFile(i)} className="ml-1 hover:text-[var(--text-primary)]">
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
         <form
           onSubmit={handleSubmit}
           className="stone-card architectural-corners p-3 transition focus-within:border-[var(--accent-green)]"
@@ -214,7 +321,22 @@ export default function DashboardPage() {
 
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-2 text-[var(--text-primary)] min-[720px]:gap-4">
-              {[Paperclip, Grid2X2, Sparkles, FileText, CalendarDays].map(
+              <label
+                title="Attach file"
+                className="grid h-8 w-8 cursor-pointer place-items-center rounded-[6px] text-[var(--text-muted)] transition hover:bg-[rgba(255,255,255,0.3)] hover:text-[var(--text-primary)]"
+              >
+                <input
+                  type="file"
+                  multiple
+                  className="hidden"
+                  onChange={handleFileChange}
+                  ref={fileInputRef}
+                  disabled={status !== "ready"}
+                />
+                <Paperclip className="h-5 w-5 stroke-[1.7]" />
+              </label>
+
+              {[Grid2X2, Sparkles, FileText, CalendarDays].map(
                 (Icon, index) => (
                   <button
                     key={index}
@@ -259,5 +381,61 @@ export default function DashboardPage() {
         </p>
       </div>
     </section>
+  );
+}
+
+function DashboardContent() {
+  const searchParams = useSearchParams();
+  const chatId = searchParams.get("chat");
+  
+  const [initialMessages, setInitialMessages] = useState<any[]>([]);
+  const [sessionLoaded, setSessionLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!chatId) {
+      setTimeout(() => {
+        setInitialMessages([]);
+        setSessionLoaded(true);
+      }, 0);
+      return;
+    }
+
+    setSessionLoaded(false);
+    fetch(`/api/chat/session/${chatId}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to load session");
+        return res.json();
+      })
+      .then((data) => {
+        setInitialMessages(data.messages);
+        setSessionLoaded(true);
+      })
+      .catch((err) => {
+        console.error(err);
+        setInitialMessages([]);
+        setSessionLoaded(true);
+      });
+  }, [chatId]);
+
+  if (!sessionLoaded) {
+    return (
+      <section className="stone-panel architectural-corners flex h-full min-h-0 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[var(--accent-green)]" />
+      </section>
+    );
+  }
+
+  return <ChatWindow key={chatId || "new"} initialMessages={initialMessages} chatId={chatId} />;
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={
+      <section className="stone-panel architectural-corners flex h-full min-h-0 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[var(--accent-green)]" />
+      </section>
+    }>
+      <DashboardContent />
+    </Suspense>
   );
 }

@@ -1,10 +1,39 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { ChevronDown, Landmark, Search } from "lucide-react";
+import { ChevronDown, Landmark, Search, Moon, Sun } from "lucide-react";
 
 export function TopBar() {
+  const [user, setUser] = useState<any>(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/user/me")
+      .then(res => res.json())
+      .then(data => setUser(data))
+      .catch(console.error);
+
+    // Dark mode check
+    if (typeof window !== "undefined") {
+      const isDark = document.documentElement.classList.contains("dark") || localStorage.getItem("theme") === "dark";
+      setIsDarkMode(isDark);
+      if (isDark) document.documentElement.classList.add("dark");
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    const nextMode = !isDarkMode;
+    setIsDarkMode(nextMode);
+    if (nextMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  };
+
   return (
     <header className="relative h-[126px] shrink-0 px-2 pt-3 min-[900px]:h-[112px]">
       <div className="absolute left-4 top-3 text-[var(--accent-bronze)] min-[900px]:left-[calc((100%_-_365px)/2)] min-[900px]:-translate-x-1/2">
@@ -37,26 +66,29 @@ export function TopBar() {
           </span>
         </label>
 
-        <div className="flex h-10 items-center gap-2 rounded-[7px] border border-[rgba(174,144,100,0.28)] bg-[rgba(255,253,248,0.62)] px-3 text-[11px] font-semibold tracking-[0.05em] text-[var(--text-primary)] min-[900px]:px-4 min-[900px]:text-xs">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#6f9a72]" />
-          LOCAL MODE
-        </div>
+        <button 
+          onClick={toggleDarkMode}
+          className="flex h-10 w-10 items-center justify-center rounded-[7px] border border-[rgba(174,144,100,0.28)] bg-[rgba(255,253,248,0.62)] text-[var(--text-primary)] hover:bg-[var(--accent-green)] hover:text-white transition-colors"
+          title="Toggle Dark Mode"
+        >
+          {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </button>
 
         <button className="hidden h-[52px] items-center gap-3 rounded-full px-1.5 pr-2 text-left transition hover:bg-[rgba(255,253,248,0.5)] min-[520px]:flex">
-          <span className="relative h-12 w-12 overflow-hidden rounded-full border border-[rgba(174,144,100,0.42)] bg-[#eee7dc] shadow-[0_5px_14px_rgba(72,56,38,0.12)]">
-            <Image
-              src="/athena.png"
-              alt="Athena advisor"
-              fill
-              sizes="48px"
-              className="relief-avatar object-cover"
-            />
-          </span>
-          <span className="hidden min-[1320px]:block">
-            <span className="block text-xs font-bold tracking-[0.09em] text-[var(--text-primary)]">
-              ATHENA
+          {user?.image ? (
+            <span className="relative h-12 w-12 overflow-hidden rounded-full border border-[rgba(174,144,100,0.42)] bg-[#eee7dc] shadow-[0_5px_14px_rgba(72,56,38,0.12)]">
+              <img src={user.image} alt={user.name} className="object-cover w-full h-full" />
             </span>
-            <span className="block text-xs text-[var(--text-muted)]">Advisor</span>
+          ) : (
+            <span className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-[rgba(174,144,100,0.42)] bg-[var(--accent-green)] text-white font-serif text-lg shadow-[0_5px_14px_rgba(72,56,38,0.12)]">
+              {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+            </span>
+          )}
+          <span className="hidden min-[1320px]:block">
+            <span className="block text-xs font-bold tracking-[0.09em] text-[var(--text-primary)] uppercase">
+              {user?.name || "System Admin"}
+            </span>
+            <span className="block text-xs text-[var(--text-muted)]">User Profile</span>
           </span>
           <ChevronDown className="hidden h-4 w-4 text-[var(--text-primary)] min-[1320px]:block" />
         </button>

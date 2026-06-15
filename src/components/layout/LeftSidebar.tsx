@@ -100,12 +100,17 @@ export function LeftSidebar() {
             <Boxes className="absolute -bottom-1 right-3 h-9 w-9 rotate-[25deg] scale-x-[-1] text-[rgba(174,144,100,0.28)]" />
           </div>
 
-          <p className="text-center font-serif text-[0.86rem] font-semibold tracking-[0.23em] text-[var(--text-primary)]">
-            LOCAL FIRST
-          </p>
-          <p className="mt-1 text-center font-serif text-[0.76rem] font-semibold tracking-[0.22em] text-[var(--text-primary)]">
-            PRIVATE BY DESIGN
-          </p>
+          <div className="flex flex-col items-center text-center gap-1.5 w-full">
+            <p className="font-serif text-[0.86rem] font-extrabold tracking-[0.23em] text-[var(--text-primary)] w-full text-center">
+              LOCAL FIRST
+            </p>
+            <p className="font-serif text-[0.76rem] font-extrabold tracking-[0.22em] text-[var(--text-primary)] opacity-80 w-full text-center">
+              PRIVATE BY DESIGN
+            </p>
+            <p className="font-serif text-[0.76rem] font-extrabold tracking-[0.22em] text-[var(--text-primary)] opacity-60 w-full text-center">
+              YOU OWN YOUR DATA
+            </p>
+          </div>
           <div className="carved-rule mt-4 w-24" />
         </div>
       </div>

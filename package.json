@@ -1,5 +1,5 @@
 {
-  "name": "temp",
+  "name": "agentic-os",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,9 +9,19 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@hello-pangea/dnd": "^18.0.1",
+    "@prisma/client": "^7.8.0",
+    "axios": "^1.18.0",
+    "chromadb": "^3.4.3",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.40.0",
+    "gsap": "^3.15.0",
+    "lucide-react": "^1.18.0",
     "next": "16.2.9",
+    "next-auth": "^4.24.14",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -20,6 +30,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "prisma": "^7.8.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

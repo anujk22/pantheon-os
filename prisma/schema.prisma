@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+}
+
+model Case {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  status      String   @default("active")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tasks       Task[]
+  artifacts   Artifact[]
+  chatSessions ChatSession[]
+}
+
+model Task {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  status      String   @default("todo") // todo, in_progress, done
+  dueDate     DateTime?
+  caseId      String?
+  case        Case?    @relation(fields: [caseId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  date        DateTime
+  source      String   @default("manual") // manual, google_calendar
+  externalId  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ChatSession {
+  id           String   @id @default(cuid())
+  title        String
+  caseId       String?
+  case         Case?    @relation(fields: [caseId], references: [id])
+  isSummarized Boolean  @default(false)
+  summary      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  messages     ChatMessage[]
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  role      String   // user, assistant, system
+  content   String
+  vectorId  String?  // Reference to VectorDB entry
+  sessionId String
+  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Artifact {
+  id          String   @id @default(cuid())
+  title       String
+  type        String   // text, code, data, web
+  content     String
+  caseId      String?
+  case        Case?    @relation(fields: [caseId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model MorningBriefing {
+  id        String   @id @default(cuid())
+  date      DateTime @unique
+  content   String
+  createdAt DateTime @default(now())
+}

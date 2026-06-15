@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  pantheon-web:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=file:/data/database.sqlite
+      - CHROMA_URL=http://pantheon-chroma:8000
+    volumes:
+      - ${PANTHEON_DATA_DIR:-./pantheon-data}:/data
+    depends_on:
+      - pantheon-chroma
+
+  pantheon-chroma:
+    image: chromadb/chroma:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - ${PANTHEON_DATA_DIR:-./pantheon-data}/chroma:/chroma/chroma

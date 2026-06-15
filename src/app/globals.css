@@ -1,28 +1,23 @@
 @import "tailwindcss";
 
 @theme {
-  --color-pantheon-emerald-400: #34d399;
-  --color-pantheon-emerald-500: #10b981;
-  --color-pantheon-emerald-600: #059669;
-  --color-pantheon-emerald-700: #047857;
-  --color-pantheon-emerald-800: #064e3b;
-  --color-pantheon-emerald-900: #022c22;
-
-  --color-pantheon-obsidian: #0b0f0e;
-  --color-pantheon-onyx: #121816;
-  --color-pantheon-onyx-light: #1b2421;
-  --color-pantheon-gold: #c5a059;
-  --color-pantheon-gold-light: #e5c179;
-  --color-pantheon-marble: #fafafa;
-  --color-pantheon-marble-muted: #a3a3a3;
+  --color-pantheon-bg: #F4F4F0;
+  --color-pantheon-surface: #FFFFFF;
+  --color-pantheon-border: #D8D8D0;
+  --color-pantheon-text-primary: #1F2924;
+  --color-pantheon-text-secondary: #5A6960;
+  --color-pantheon-emerald-light: #4A7A60;
+  --color-pantheon-emerald-main: #2A4D3E;
+  --color-pantheon-emerald-dark: #1A3328;
+  --color-pantheon-gold: #C5A059;
 
   --font-serif: var(--font-playfair);
   --font-sans: var(--font-inter);
 }
 
 :root {
-  --background: var(--color-pantheon-obsidian);
-  --foreground: var(--color-pantheon-marble);
+  --background: #FAF9F6;
+  --foreground: #1a1f1c;
 }
 
 body {
@@ -31,3 +26,17 @@ body {
   font-family: var(--font-sans);
 }
 
+/* Custom sleek scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(27, 59, 43, 0.2);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(27, 59, 43, 0.4);
+}

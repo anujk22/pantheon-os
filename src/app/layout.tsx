@@ -12,7 +12,7 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
 });
 
-import { Shell } from "@/components/layout/Shell";
+import { ClientShellWrapper } from "@/components/layout/ClientShellWrapper";
 
 export const metadata: Metadata = {
   title: "Project Pantheon | Agentic OS",
@@ -29,8 +29,8 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${playfair.variable} h-full antialiased dark`}
     >
-      <body className="h-full flex flex-col bg-pantheon-obsidian text-pantheon-marble overflow-hidden font-sans selection:bg-pantheon-emerald-800 selection:text-pantheon-marble">
-        <Shell>{children}</Shell>
+      <body className="h-full flex flex-col bg-pantheon-bg text-pantheon-text-primary overflow-hidden font-sans selection:bg-pantheon-emerald-main selection:text-white">
+        <ClientShellWrapper>{children}</ClientShellWrapper>
       </body>
     </html>
   );

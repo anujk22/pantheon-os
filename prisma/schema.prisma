@@ -4,7 +4,8 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
+  engineType = "library"
 }
 
 datasource db {
@@ -17,6 +18,11 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  llmProvider   String?   @default("lmstudio")
+  llmBaseUrl    String?
+  llmApiKey     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model Case {
@@ -29,6 +35,8 @@ model Case {
   tasks       Task[]
   artifacts   Artifact[]
   chatSessions ChatSession[]
+  inboxItems  InboxItem[]
+  memories    Memory[]
 }
 
 model Task {
@@ -39,6 +47,8 @@ model Task {
   dueDate     DateTime?
   caseId      String?
   case        Case?    @relation(fields: [caseId], references: [id])
+  sourceInboxItemId String?
+  sourceInboxItem   InboxItem? @relation(fields: [sourceInboxItemId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -83,8 +93,44 @@ model Artifact {
   content     String
   caseId      String?
   case        Case?    @relation(fields: [caseId], references: [id])
+  sourceInboxItemId String?
+  sourceInboxItem   InboxItem? @relation(fields: [sourceInboxItemId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Memory {
+  id          String   @id @default(cuid())
+  content     String
+  memoryType  String   @default("fact")
+  sourceType  String   @default("manual")
+  sourceRef   String?
+  confidence  Float?
+  caseId      String?
+  case        Case?    @relation(fields: [caseId], references: [id])
+  sourceInboxItemId String?
+  sourceInboxItem   InboxItem? @relation(fields: [sourceInboxItemId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model InboxItem {
+  id          String   @id @default(cuid())
+  title       String
+  body        String
+  sourceType  String   @default("manual") // manual, chat, calendar, canvas, file, codex, import, system
+  sourceRef   String?
+  status      String   @default("untriaged") // untriaged, triaged, archived
+  suggestedDestination String @default("unknown") // task, case, artifact, memory, archive, unknown
+  confidence  Float?
+  caseId      String?
+  case        Case?    @relation(fields: [caseId], references: [id])
+  triagedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tasks       Task[]
+  artifacts   Artifact[]
+  memories    Memory[]
 }
 
 model MorningBriefing {

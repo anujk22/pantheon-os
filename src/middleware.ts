@@ -2,10 +2,12 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  const isOnboarding = request.nextUrl.pathname.startsWith('/onboarding')
-  const isApi = request.nextUrl.pathname.startsWith('/api')
+  const pathname = request.nextUrl.pathname
+  const isOnboarding = pathname.startsWith('/onboarding')
+  const isApi = pathname.startsWith('/api')
+  const isPublicAsset = /\.[a-zA-Z0-9]+$/.test(pathname)
   
-  if (isApi) return NextResponse.next()
+  if (isApi || isPublicAsset) return NextResponse.next()
 
   const hasOnboarded = request.cookies.has('pantheon_onboarded')
 

@@ -1,9 +1,5 @@
-import { PrismaClient } from "@prisma/client";
-import { ChromaClient } from "chromadb";
+import { prisma } from "../lib/prisma";
 import axios from "axios";
-
-const prisma = new PrismaClient();
-const chroma = new ChromaClient({ path: "http://localhost:8000" });
 
 async function runDreamCadence() {
   console.log("Starting Dream Cadence...");

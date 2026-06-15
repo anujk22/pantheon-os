@@ -1,8 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../lib/prisma";
 import { ChromaClient } from "chromadb";
 import axios from "axios";
 
-const prisma = new PrismaClient();
 // Use the env var or default for chroma connection
 const chroma = new ChromaClient({ path: process.env.CHROMA_URL || "http://localhost:8000" });
 

@@ -23,7 +23,8 @@ export function KanbanBoard({ caseId }: { caseId: string }) {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
+    const frame = requestAnimationFrame(() => setIsMounted(true));
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   const onDragEnd = (result: DropResult) => {
@@ -58,7 +59,7 @@ export function KanbanBoard({ caseId }: { caseId: string }) {
   if (!isMounted) return null;
 
   return (
-    <div className="h-full w-full bg-pantheon-onyx/50 rounded-xl p-4 overflow-x-auto flex space-x-4 custom-scrollbar">
+    <div data-case-id={caseId} className="h-full w-full bg-pantheon-onyx/50 rounded-xl p-4 overflow-x-auto flex space-x-4 custom-scrollbar">
       <DragDropContext onDragEnd={onDragEnd}>
         {Object.entries(columns).map(([columnId, column]) => {
           return (

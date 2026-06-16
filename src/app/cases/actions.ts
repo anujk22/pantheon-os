@@ -1,15 +1,21 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { createCaseRecord } from "@/lib/cases";
 import { revalidatePath } from "next/cache";
 
-export async function createCase(data: { title: string; description?: string }) {
-  await prisma.case.create({
-    data: {
-      title: data.title,
-      description: data.description,
-      status: "active",
-    },
-  });
+export type CreateCaseState = {
+  caseId?: string;
+  message?: string;
+};
+
+export async function createCase(
+  _prevState: CreateCaseState,
+  formData: FormData
+): Promise<CreateCaseState> {
+  const title = String(formData.get("title") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+
+  const result = await createCaseRecord({ title, description });
   revalidatePath("/cases");
+  return result;
 }

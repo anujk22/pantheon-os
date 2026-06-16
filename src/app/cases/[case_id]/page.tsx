@@ -1,6 +1,6 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { FolderKanban, MessageSquareOff } from "lucide-react";
+import { FolderKanban } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import CaseChat from "./CaseChat";
 
@@ -33,7 +33,7 @@ export default async function CaseWorkspacePage({
     <div className="stone-panel architectural-corners flex h-full w-full flex-col overflow-hidden">
       <header className="relative z-10 border-b border-[rgba(174,144,100,0.18)] p-6">
         <div className="flex items-center gap-3">
-          <div className="grid h-11 w-11 place-items-center rounded-[8px] border border-[rgba(174,144,100,0.28)] bg-[rgba(255,253,248,0.66)]">
+          <div className="grid h-11 w-11 place-items-center rounded-[8px] border border-[var(--border-soft)] bg-[var(--control-muted)]">
             <FolderKanban className="h-6 w-6 text-[var(--accent-green)]" />
           </div>
           <div>
@@ -112,7 +112,7 @@ function TaskColumn({
           {tasks.map((task) => (
             <article
               key={task.id}
-              className="rounded-[8px] border border-[rgba(174,144,100,0.22)] bg-[rgba(255,253,248,0.58)] p-3"
+              className="rounded-[8px] border border-[var(--border-soft)] bg-[var(--control-muted)] p-3"
             >
               <h4 className="text-sm font-semibold text-[var(--text-primary)]">
                 {task.title}

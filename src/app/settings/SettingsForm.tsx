@@ -47,7 +47,7 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
 
         <div className="space-y-8 max-w-2xl overflow-y-auto custom-scrollbar pr-4">
           
-          <form onSubmit={handleSave} className="space-y-6 bg-[rgba(255,253,248,0.58)] border border-[rgba(174,144,100,0.28)] rounded-[8px] p-6 shadow-sm">
+          <form onSubmit={handleSave} className="soft-surface space-y-6 rounded-[8px] p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-4 border-b border-[rgba(174,144,100,0.18)] pb-2">
               <User className="w-5 h-5 text-[var(--accent-bronze)]" />
               <h3 className="font-serif text-xl text-[var(--text-primary)]">User Profile</h3>
@@ -62,7 +62,7 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
                   type="text"
                   value={formData.name}
                   onChange={e => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-white border border-[var(--pantheon-border)] rounded-[6px] outline-none text-[var(--text-primary)] px-4 py-2.5 focus:border-[var(--accent-green)] transition-colors text-sm shadow-sm"
+                  className="form-control w-full px-4 py-2.5 text-sm shadow-sm"
                   required
                 />
               </div>
@@ -75,7 +75,7 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
                   type="text"
                   value={formData.image}
                   onChange={e => setFormData({ ...formData, image: e.target.value })}
-                  className="w-full bg-white border border-[var(--pantheon-border)] rounded-[6px] outline-none text-[var(--text-primary)] px-4 py-2.5 focus:border-[var(--accent-green)] transition-colors text-sm shadow-sm"
+                  className="form-control w-full px-4 py-2.5 text-sm shadow-sm"
                   placeholder="https://example.com/avatar.png"
                 />
               </div>
@@ -94,7 +94,7 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
                 <select
                   value={formData.llmProvider}
                   onChange={e => setFormData({ ...formData, llmProvider: e.target.value })}
-                  className="w-full bg-white border border-[var(--pantheon-border)] rounded-[6px] outline-none text-[var(--text-primary)] px-4 py-2.5 focus:border-[var(--accent-green)] transition-colors text-sm shadow-sm"
+                  className="form-control w-full px-4 py-2.5 text-sm shadow-sm"
                 >
                   <option value="lmstudio">LM Studio (Local)</option>
                   <option value="openai">OpenAI</option>
@@ -110,7 +110,7 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
                   type="text"
                   value={formData.llmModel}
                   onChange={e => setFormData({ ...formData, llmModel: e.target.value })}
-                  className="w-full bg-white border border-[var(--pantheon-border)] rounded-[6px] outline-none text-[var(--text-primary)] px-4 py-2.5 focus:border-[var(--accent-green)] transition-colors text-sm shadow-sm"
+                  className="form-control w-full px-4 py-2.5 text-sm shadow-sm"
                   placeholder="e.g. gpt-4o, gemini-1.5-pro"
                 />
               </div>
@@ -123,7 +123,7 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
                   type="text"
                   value={formData.llmBaseUrl}
                   onChange={e => setFormData({ ...formData, llmBaseUrl: e.target.value })}
-                  className="w-full bg-white border border-[var(--pantheon-border)] rounded-[6px] outline-none text-[var(--text-primary)] px-4 py-2.5 focus:border-[var(--accent-green)] transition-colors text-sm shadow-sm"
+                  className="form-control w-full px-4 py-2.5 text-sm shadow-sm"
                   required
                 />
               </div>
@@ -136,7 +136,7 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
                   type="password"
                   value={formData.llmApiKey}
                   onChange={e => setFormData({ ...formData, llmApiKey: e.target.value })}
-                  className="w-full bg-white border border-[var(--pantheon-border)] rounded-[6px] outline-none text-[var(--text-primary)] px-4 py-2.5 focus:border-[var(--accent-green)] transition-colors text-sm shadow-sm"
+                  className="form-control w-full px-4 py-2.5 text-sm shadow-sm"
                   placeholder="Leave empty if using local unauthenticated model"
                 />
               </div>
@@ -154,7 +154,7 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
               <textarea
                 value={formData.systemPrompt}
                 onChange={e => setFormData({ ...formData, systemPrompt: e.target.value })}
-                className="w-full bg-white border border-[var(--pantheon-border)] rounded-[6px] outline-none text-[var(--text-primary)] px-4 py-3 focus:border-[var(--accent-green)] transition-colors text-sm min-h-[120px] resize-y shadow-sm"
+                className="form-control min-h-[120px] w-full resize-y px-4 py-3 text-sm shadow-sm"
                 placeholder="Instruct Athena on how she should act, what rules to follow, etc."
               />
             </div>
@@ -170,7 +170,7 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
               <button
                 type="submit"
                 disabled={isSaving}
-                className="flex items-center bg-[var(--accent-green)] hover:bg-[#152F22] text-white px-6 py-2.5 rounded-[6px] font-medium text-sm transition-colors shadow-sm disabled:opacity-50"
+                className="flex items-center rounded-[6px] bg-[var(--accent-green)] px-6 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[var(--accent-green-hover)] disabled:opacity-50"
               >
                 {isSaving ? "Saving..." : (
                   <>
@@ -183,18 +183,18 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
           </form>
 
           {/* Danger Zone */}
-          <div className="bg-[#fff7f4]/80 border border-[#b94d3f]/25 rounded-[8px] p-6">
-            <h3 className="text-[#7b2d25] font-bold flex items-center mb-2">
+          <div className="danger-callout rounded-[8px] p-6">
+            <h3 className="mb-2 flex items-center font-bold">
               <AlertTriangle className="w-5 h-5 mr-2" /> Danger Zone
             </h3>
-            <p className="text-sm text-[#b94d3f] mb-4">
+            <p className="mb-4 text-sm">
               Resetting onboarding will clear your session and force you to re-enter your LLM provider details. Use this for testing features.
             </p>
             <button 
               onClick={handleReset}
               disabled={isPending}
               type="button"
-              className="flex items-center bg-[#b94d3f] hover:bg-[#7b2d25] text-white px-4 py-2 rounded-[6px] font-medium text-sm transition-colors shadow-sm disabled:opacity-50"
+              className="flex items-center rounded-[6px] bg-[#b94d3f] px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#7b2d25] disabled:opacity-50"
             >
               {isPending ? "Resetting..." : (
                 <>

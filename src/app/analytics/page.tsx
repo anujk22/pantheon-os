@@ -3,10 +3,10 @@ import React from "react";
 
 export default function AnalyticsPage() {
   return (
-    <div className="h-full w-full flex items-center justify-center bg-white/40 backdrop-blur-md rounded-2xl border border-white shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] p-12">
+    <div className="stone-panel architectural-corners flex h-full w-full items-center justify-center p-12">
       <div className="text-center space-y-4">
-        <h1 className="text-3xl font-serif text-[#1a1f1c] capitalize">analytics</h1>
-        <p className="text-[#4A5D53]">This module is currently offline or under construction.</p>
+        <h1 className="font-serif text-3xl text-[var(--text-primary)] capitalize">analytics</h1>
+        <p className="text-[var(--text-muted)]">This module is currently offline or under construction.</p>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cinzel, Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({
@@ -25,12 +26,25 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const themeScript = `
+    try {
+      var theme = localStorage.getItem("theme");
+      if (theme === "dark") document.documentElement.classList.add("dark");
+    } catch (_) {}
+  `;
+
   return (
     <html
       lang="en"
       className={`${inter.variable} ${cinzel.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="h-full flex flex-col bg-pantheon-bg text-pantheon-text-primary overflow-hidden font-sans selection:bg-pantheon-emerald-main selection:text-white">
+        <Script
+          id="pantheon-theme"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: themeScript }}
+        />
         <ClientShellWrapper>{children}</ClientShellWrapper>
       </body>
     </html>

@@ -1,37 +1,41 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import { ChevronDown, Landmark, Search, Moon, Sun } from "lucide-react";
 
+type UserProfile = {
+  name: string | null;
+  image: string | null;
+};
+
 export function TopBar() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<UserProfile | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [hasResolvedTheme, setHasResolvedTheme] = useState(false);
 
   useEffect(() => {
     fetch("/api/user/me")
       .then(res => res.json())
-      .then(data => setUser(data))
+      .then((data: UserProfile) => setUser(data))
       .catch(console.error);
-
-    // Dark mode check
-    if (typeof window !== "undefined") {
-      const isDark = document.documentElement.classList.contains("dark") || localStorage.getItem("theme") === "dark";
-      setIsDarkMode(isDark);
-      if (isDark) document.documentElement.classList.add("dark");
-    }
   }, []);
 
+  useEffect(() => {
+    const storedTheme = localStorage.getItem("theme");
+    setIsDarkMode(
+      storedTheme === "dark" || document.documentElement.classList.contains("dark")
+    );
+    setHasResolvedTheme(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hasResolvedTheme) return;
+    document.documentElement.classList.toggle("dark", isDarkMode);
+    localStorage.setItem("theme", isDarkMode ? "dark" : "light");
+  }, [hasResolvedTheme, isDarkMode]);
+
   const toggleDarkMode = () => {
-    const nextMode = !isDarkMode;
-    setIsDarkMode(nextMode);
-    if (nextMode) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
+    setIsDarkMode((currentMode) => !currentMode);
   };
 
   return (
@@ -54,30 +58,32 @@ export function TopBar() {
       </div>
 
       <div className="absolute right-0 top-3 flex items-center gap-2 min-[900px]:top-5 min-[900px]:gap-3">
-        <label className="relative hidden h-10 w-[230px] items-center rounded-[7px] border border-[rgba(174,144,100,0.28)] bg-[rgba(255,253,248,0.62)] px-3 shadow-[inset_0_1px_2px_rgba(72,56,38,0.05)] transition focus-within:border-[var(--accent-green)] min-[1220px]:flex min-[1500px]:w-[260px]">
+        <label className="relative hidden h-10 w-[230px] items-center rounded-[7px] border border-[var(--border-soft)] bg-[var(--control-muted)] px-3 shadow-[inset_0_1px_2px_rgba(72,56,38,0.05)] transition focus-within:border-[var(--accent-green)] min-[1220px]:flex min-[1500px]:w-[260px]">
           <Search className="mr-2 h-4 w-4 shrink-0 text-[var(--text-primary)]" />
           <input
             type="text"
             placeholder="Search Pantheon OS"
-            className="min-w-0 flex-1 bg-transparent text-sm text-[var(--text-primary)] outline-none placeholder:text-[#6f665c]"
+            className="min-w-0 flex-1 bg-transparent text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-subtle)]"
           />
-          <span className="ml-2 rounded border border-[rgba(174,144,100,0.25)] bg-[rgba(255,255,255,0.5)] px-1.5 py-0.5 text-[11px] text-[var(--text-muted)]">
+          <span className="ml-2 rounded border border-[var(--border-soft)] bg-[var(--control-subtle)] px-1.5 py-0.5 text-[11px] text-[var(--text-muted)]">
             ⌘K
           </span>
         </label>
 
         <button 
+          type="button"
           onClick={toggleDarkMode}
-          className="flex h-10 w-10 items-center justify-center rounded-[7px] border border-[rgba(174,144,100,0.28)] bg-[rgba(255,253,248,0.62)] text-[var(--text-primary)] hover:bg-[var(--accent-green)] hover:text-white transition-colors"
+          className="flex h-10 w-10 items-center justify-center rounded-[7px] border border-[var(--border-soft)] bg-[var(--control-muted)] text-[var(--text-primary)] transition-colors hover:bg-[var(--accent-green)] hover:text-white"
           title="Toggle Dark Mode"
+          aria-label="Toggle dark mode"
         >
           {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </button>
 
-        <button className="hidden h-[52px] items-center gap-3 rounded-full px-1.5 pr-2 text-left transition hover:bg-[rgba(255,253,248,0.5)] min-[520px]:flex">
+        <button type="button" className="hidden h-[52px] items-center gap-3 rounded-full px-1.5 pr-2 text-left transition hover:bg-[var(--surface-hover)] min-[520px]:flex">
           {user?.image ? (
-            <span className="relative h-12 w-12 overflow-hidden rounded-full border border-[rgba(174,144,100,0.42)] bg-[#eee7dc] shadow-[0_5px_14px_rgba(72,56,38,0.12)]">
-              <img src={user.image} alt={user.name} className="object-cover w-full h-full" />
+            <span className="relative h-12 w-12 overflow-hidden rounded-full border border-[var(--border-soft)] bg-[var(--control-muted)] shadow-[0_5px_14px_rgba(72,56,38,0.12)]">
+              <img src={user.image} alt={user.name || "User profile"} className="object-cover w-full h-full" />
             </span>
           ) : (
             <span className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-[rgba(174,144,100,0.42)] bg-[var(--accent-green)] text-white font-serif text-lg shadow-[0_5px_14px_rgba(72,56,38,0.12)]">

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import {
   Archive,
+  Bot,
   Boxes,
   Brain,
   Building2,
@@ -18,6 +19,7 @@ import {
 
 const navItems = [
   { icon: Landmark, label: "Command Layer", href: "/", badge: null },
+  { icon: Bot, label: "Agency Queue", href: "/agents", badge: null },
   { icon: Inbox, label: "Inbox", href: "/inbox", badge: null },
   { icon: BriefcaseBusiness, label: "Cases", href: "/cases", badge: null },
   { icon: Archive, label: "Artifacts", href: "/artifacts", badge: null },
@@ -57,22 +59,22 @@ export function LeftSidebar() {
                 href={item.href}
                 className={`group flex h-[52px] items-center gap-3 rounded-[8px] border px-4 text-[15px] transition-all duration-200 ${
                   isActive
-                    ? "border-[rgba(174,144,100,0.34)] bg-[rgba(255,253,248,0.72)] text-[var(--accent-green)] shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_8px_18px_rgba(66,52,34,0.06)]"
-                    : "border-transparent text-[var(--text-primary)] hover:border-[rgba(174,144,100,0.22)] hover:bg-[rgba(255,255,255,0.38)]"
+                    ? "border-[var(--border-soft)] bg-[var(--control-muted)] text-[var(--accent-green)] shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_8px_18px_rgba(66,52,34,0.06)]"
+                    : "border-transparent text-[var(--text-primary)] hover:border-[var(--border-soft)] hover:bg-[var(--surface-hover)]"
                 }`}
               >
                 <item.icon
                   className={`h-5 w-5 shrink-0 stroke-[1.45] ${
                     isActive
                       ? "text-[var(--accent-green)]"
-                      : "text-[rgba(34,31,27,0.64)] group-hover:text-[var(--accent-green)]"
+                      : "text-[var(--text-muted)] group-hover:text-[var(--accent-green)]"
                   }`}
                 />
                 <span className="min-w-0 flex-1 truncate font-medium">
                   {item.label}
                 </span>
                 {item.badge ? (
-                  <span className="grid h-7 w-7 place-items-center rounded-full border border-[rgba(174,144,100,0.32)] bg-[rgba(255,255,255,0.52)] text-sm text-[var(--accent-green)]">
+                  <span className="grid h-7 w-7 place-items-center rounded-full border border-[var(--border-soft)] bg-[var(--control-subtle)] text-sm text-[var(--accent-green)]">
                     {item.badge}
                   </span>
                 ) : isActive ? (
@@ -85,9 +87,9 @@ export function LeftSidebar() {
 
         <div className="mt-auto flex flex-col items-center">
           <div className="relative mb-6 h-[178px] w-[178px]">
-            <div className="absolute inset-0 rounded-full border border-[rgba(174,144,100,0.24)] bg-[rgba(255,255,255,0.28)] shadow-[inset_0_2px_12px_rgba(104,83,57,0.12)]" />
-            <div className="absolute inset-3 rounded-full border border-[rgba(174,144,100,0.38)] bg-[rgba(246,239,228,0.88)] shadow-[0_12px_24px_rgba(72,56,38,0.12)]" />
-            <div className="absolute inset-6 overflow-hidden rounded-full border border-[rgba(174,144,100,0.42)] bg-[#efe7da]">
+            <div className="absolute inset-0 rounded-full border border-[var(--border-soft)] bg-[var(--surface-hover)] shadow-[inset_0_2px_12px_rgba(104,83,57,0.12)]" />
+            <div className="absolute inset-3 rounded-full border border-[var(--border-soft)] bg-[var(--control-muted)] shadow-[0_12px_24px_rgba(72,56,38,0.12)]" />
+            <div className="absolute inset-6 overflow-hidden rounded-full border border-[var(--border-soft)] bg-[var(--control)]">
               <Image
                 src="/athena.png"
                 alt="Athena relief"

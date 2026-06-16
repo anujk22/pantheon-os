@@ -5,7 +5,7 @@ import React from "react";
 export function BottomBar() {
   return (
     <footer className="relative h-10 shrink-0 overflow-hidden border-t border-[rgba(174,144,100,0.24)] text-[var(--text-primary)]">
-      <div className="absolute inset-0 bg-[rgba(255,253,248,0.34)]" />
+      <div className="absolute inset-0 bg-[var(--surface-soft)]" />
       <div className="relative z-10 flex h-full items-center justify-center gap-3 px-3 text-center font-serif text-[0.62rem] font-medium tracking-[0.18em] min-[720px]:gap-8 min-[720px]:text-[0.78rem] min-[720px]:tracking-[0.34em]">
         <span className="hidden text-[var(--accent-bronze)] min-[1180px]:inline">⌁</span>
         <span>LOCAL FIRST</span>

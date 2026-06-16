@@ -43,7 +43,7 @@ export default function VaultClient({ memories }: { memories: any[] }) {
         </div>
         <button
           onClick={() => setIsAdding(true)}
-          className="flex items-center gap-2 rounded-[8px] bg-[var(--accent-green)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#152F22]"
+          className="flex items-center gap-2 rounded-[8px] bg-[var(--accent-green)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-green-hover)]"
         >
           <Plus className="h-4 w-4" />
           Add Memory
@@ -58,7 +58,7 @@ export default function VaultClient({ memories }: { memories: any[] }) {
               placeholder="Inject a new fact or context into Pantheon's memory..."
               value={newContent}
               onChange={(e) => setNewContent(e.target.value)}
-              className="w-full bg-white border border-[var(--pantheon-border)] rounded-lg outline-none text-[var(--text-primary)] px-4 py-3 focus:border-[var(--accent-green)] transition-colors text-sm min-h-[100px] resize-none"
+              className="form-control min-h-[100px] w-full resize-none px-4 py-3 text-sm"
               required
             />
             <div className="flex justify-end gap-3">
@@ -72,7 +72,7 @@ export default function VaultClient({ memories }: { memories: any[] }) {
               <button
                 type="submit"
                 disabled={isPending}
-                className="flex items-center gap-2 rounded-[8px] bg-[var(--accent-green)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#152F22] disabled:opacity-50"
+                className="flex items-center gap-2 rounded-[8px] bg-[var(--accent-green)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-green-hover)] disabled:opacity-50"
               >
                 Inject Memory
               </button>
@@ -81,14 +81,14 @@ export default function VaultClient({ memories }: { memories: any[] }) {
         </div>
       )}
 
-      <div className="mb-6 flex items-center bg-white border border-[var(--pantheon-border)] rounded-lg px-4 py-2">
+      <div className="form-control mb-6 flex items-center px-4 py-2">
         <Search className="w-5 h-5 text-[var(--text-muted)] mr-2" />
         <input 
           type="text" 
           placeholder="Search memory graph..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="flex-1 bg-transparent outline-none text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)]"
+          className="flex-1 bg-transparent text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-subtle)]"
         />
       </div>
 
@@ -113,7 +113,7 @@ export default function VaultClient({ memories }: { memories: any[] }) {
                       <Brain className="w-3 h-3 mr-1.5" />
                       {memory.memoryType}
                     </span>
-                    <span className="text-[10px] text-[var(--text-muted)] uppercase bg-[rgba(255,253,248,0.58)] border border-[rgba(174,144,100,0.18)] px-2 py-0.5 rounded-[4px]">
+                    <span className="rounded-[4px] border border-[var(--border-soft)] bg-[var(--control-muted)] px-2 py-0.5 text-[10px] text-[var(--text-muted)] uppercase">
                       {memory.sourceType}
                     </span>
                   </div>

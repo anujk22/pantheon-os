@@ -41,19 +41,19 @@ export default async function CommandInboxPage() {
   const archivedCount = items.filter((item) => item.status === "archived").length;
 
   return (
-    <div className="h-full w-full flex flex-col bg-white/55 border border-white rounded-2xl shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] overflow-hidden">
-      <header className="px-7 py-5 border-b border-white/80 bg-white/45">
+    <div className="stone-panel architectural-corners flex h-full w-full flex-col overflow-hidden">
+      <header className="relative z-10 border-b border-[var(--border-soft)] bg-[var(--surface-soft)] px-7 py-5">
         <div className="flex items-start justify-between gap-6">
           <div>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-[#1B3B2B] text-[#D4AF37] flex items-center justify-center border border-[#D4AF37]/40">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--border-soft)] bg-[var(--accent-green)] text-white">
                 <Inbox className="w-5 h-5" />
               </div>
               <div>
-                <h1 className="font-serif text-3xl font-bold text-[#1a1f1c]">
+                <h1 className="font-serif text-3xl font-bold text-[var(--text-primary)]">
                   Command Inbox
                 </h1>
-                <p className="text-sm text-[#4A5D53] mt-1">
+                <p className="mt-1 text-sm text-[var(--text-muted)]">
                   Capture first. Triage before memory.
                 </p>
               </div>
@@ -73,11 +73,11 @@ export default async function CommandInboxPage() {
             required
             minLength={2}
             placeholder="Capture a note, imported context, loose task, or idea..."
-            className="min-w-0 flex-1 rounded-xl border border-[#D8D8D0] bg-white px-4 py-3 text-sm text-[#1a1f1c] placeholder:text-[#5A6960] outline-none focus:border-[#1B3B2B] focus:ring-2 focus:ring-[#1B3B2B]/15"
+            className="form-control min-w-0 flex-1 px-4 py-3 text-sm"
           />
           <button
             type="submit"
-            className="h-11 px-4 rounded-xl bg-[#1B3B2B] text-white text-sm font-semibold border border-[#D4AF37]/40 hover:bg-[#142A1E] focus:outline-none focus:ring-2 focus:ring-[#1B3B2B]/25 flex items-center gap-2"
+            className="flex h-11 items-center gap-2 rounded-xl border border-[var(--border-soft)] bg-[var(--accent-green)] px-4 text-sm font-semibold text-white hover:bg-[var(--accent-green-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-green)]"
           >
             <Plus className="w-4 h-4" />
             Capture
@@ -85,12 +85,12 @@ export default async function CommandInboxPage() {
         </form>
       </header>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-5">
+      <div className="relative z-10 flex-1 overflow-y-auto p-5 custom-scrollbar">
         {sortedItems.length === 0 ? (
           <div className="h-full flex items-center justify-center text-center">
             <div className="max-w-md">
-              <h2 className="font-serif text-2xl text-[#1a1f1c]">Inbox is clear</h2>
-              <p className="text-sm text-[#4A5D53] mt-2">
+              <h2 className="font-serif text-2xl text-[var(--text-primary)]">Inbox is clear</h2>
+              <p className="mt-2 text-sm text-[var(--text-muted)]">
                 Add a manual capture above. Imported chats, files, calendars, and Codex
                 summaries should land here before they become durable memory.
               </p>
@@ -101,7 +101,7 @@ export default async function CommandInboxPage() {
             {sortedItems.map((item) => (
               <article
                 key={item.id}
-                className="rounded-xl border border-white bg-white/80 shadow-sm overflow-hidden"
+                className="stone-card overflow-hidden"
               >
                 <div className="p-5 flex gap-5">
                   <div className="flex-1 min-w-0">
@@ -109,30 +109,30 @@ export default async function CommandInboxPage() {
                       <Badge>{item.sourceType}</Badge>
                       <DestinationBadge destination={item.suggestedDestination} />
                       <StatusBadge status={item.status} />
-                      <span className="text-xs text-[#5A6960]">
+                      <span className="text-xs text-[var(--text-muted)]">
                         {formatDate(item.createdAt)}
                       </span>
                       {item.case ? (
-                        <span className="text-xs text-[#1B3B2B]">
+                        <span className="text-xs text-[var(--accent-green)]">
                           Case: {item.case.title}
                         </span>
                       ) : null}
                     </div>
 
-                    <h2 className="font-serif text-xl font-bold text-[#1a1f1c] leading-tight">
+                    <h2 className="font-serif text-xl font-bold leading-tight text-[var(--text-primary)]">
                       {item.title}
                     </h2>
-                    <p className="text-sm text-[#34433B] mt-2 leading-relaxed whitespace-pre-wrap">
+                    <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-[var(--text-primary)]">
                       {item.body}
                     </p>
                     {typeof item.confidence === "number" ? (
-                      <p className="text-xs text-[#5A6960] mt-3">
+                      <p className="mt-3 text-xs text-[var(--text-muted)]">
                         Local classifier confidence: {Math.round(item.confidence * 100)}%
                       </p>
                     ) : null}
                   </div>
 
-                  <div className="w-[360px] shrink-0 border-l border-gray-100 pl-5">
+                  <div className="w-[360px] shrink-0 border-l border-[var(--border-soft)] pl-5">
                     <div className="grid grid-cols-2 gap-2">
                       <TriageButton
                         itemId={item.id}
@@ -170,7 +170,7 @@ export default async function CommandInboxPage() {
                       <select
                         name="caseId"
                         aria-label="Case destination"
-                        className="min-w-0 flex-1 rounded-lg border border-[#D8D8D0] bg-white px-3 py-2 text-xs text-[#1a1f1c] outline-none focus:border-[#1B3B2B]"
+                        className="form-control min-w-0 flex-1 px-3 py-2 text-xs"
                         defaultValue={item.caseId ?? ""}
                       >
                         <option value="">New case from item</option>
@@ -182,7 +182,7 @@ export default async function CommandInboxPage() {
                       </select>
                       <button
                         type="submit"
-                        className="rounded-lg border border-[#D8D8D0] bg-white px-3 py-2 text-xs font-semibold text-[#1B3B2B] hover:border-[#1B3B2B] focus:outline-none focus:ring-2 focus:ring-[#1B3B2B]/15 flex items-center gap-1"
+                        className="flex items-center gap-1 rounded-lg border border-[var(--border-stone)] bg-[var(--control)] px-3 py-2 text-xs font-semibold text-[var(--accent-green)] hover:border-[var(--accent-green)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-green)]"
                       >
                         <Briefcase className="w-4 h-4" />
                         Attach
@@ -330,7 +330,7 @@ function TriageButton({
       <input type="hidden" name="destination" value={destination} />
       <button
         type="submit"
-        className="w-full rounded-lg border border-[#D8D8D0] bg-white px-3 py-2 text-xs font-semibold text-[#1B3B2B] hover:border-[#1B3B2B] hover:bg-[#F4F4F0] focus:outline-none focus:ring-2 focus:ring-[#1B3B2B]/15 flex items-center justify-center gap-2"
+        className="flex w-full items-center justify-center gap-2 rounded-lg border border-[var(--border-stone)] bg-[var(--control)] px-3 py-2 text-xs font-semibold text-[var(--accent-green)] hover:border-[var(--accent-green)] hover:bg-[var(--surface-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-green)]"
       >
         {icon}
         {children}
@@ -341,16 +341,16 @@ function TriageButton({
 
 function Metric({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-lg border border-white bg-white/70 px-3 py-2">
-      <p className="text-lg font-bold text-[#1a1f1c] leading-none">{value}</p>
-      <p className="text-[10px] text-[#5A6960] mt-1">{label}</p>
+    <div className="rounded-lg border border-[var(--border-soft)] bg-[var(--control-muted)] px-3 py-2">
+      <p className="text-lg font-bold leading-none text-[var(--text-primary)]">{value}</p>
+      <p className="mt-1 text-[10px] text-[var(--text-muted)]">{label}</p>
     </div>
   );
 }
 
 function Badge({ children }: { children: ReactNode }) {
   return (
-    <span className="rounded-full border border-[#D8D8D0] bg-[#F4F4F0] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#4A5D53]">
+    <span className="rounded-full border border-[var(--border-soft)] bg-[var(--control-muted)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
       {children}
     </span>
   );
@@ -358,7 +358,7 @@ function Badge({ children }: { children: ReactNode }) {
 
 function DestinationBadge({ destination }: { destination: string }) {
   return (
-    <span className="rounded-full border border-[#D4AF37]/40 bg-[#D4AF37]/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#1B3B2B]">
+    <span className="rounded-full border border-[var(--border-soft)] bg-[var(--control-muted)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--accent-green)]">
       Suggested: {destination}
     </span>
   );
@@ -367,10 +367,10 @@ function DestinationBadge({ destination }: { destination: string }) {
 function StatusBadge({ status }: { status: string }) {
   const tone =
     status === "untriaged"
-      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+      ? "success-badge"
       : status === "archived"
-        ? "border-gray-200 bg-gray-50 text-gray-600"
-        : "border-[#D4AF37]/40 bg-[#D4AF37]/10 text-[#1B3B2B]";
+        ? "border-[var(--border-soft)] bg-[var(--control-muted)] text-[var(--text-muted)]"
+        : "border-[var(--border-soft)] bg-[var(--control-muted)] text-[var(--accent-green)]";
 
   return (
     <span className={`rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${tone}`}>

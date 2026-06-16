@@ -55,7 +55,7 @@ export default function ArtifactsClient({ artifacts }: { artifacts: any[] }) {
         </div>
         <button
           onClick={() => setIsAdding(true)}
-          className="flex items-center gap-2 rounded-[8px] bg-[var(--accent-green)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#152F22]"
+          className="flex items-center gap-2 rounded-[8px] bg-[var(--accent-green)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-green-hover)]"
         >
           <Plus className="h-4 w-4" />
           Create Artifact
@@ -71,13 +71,13 @@ export default function ArtifactsClient({ artifacts }: { artifacts: any[] }) {
                 placeholder="Artifact Title"
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
-                className="flex-1 bg-white border border-[var(--pantheon-border)] rounded-lg outline-none text-[var(--text-primary)] px-4 py-2 text-sm focus:border-[var(--accent-green)] transition-colors"
+                className="form-control flex-1 px-4 py-2 text-sm"
                 required
               />
               <select
                 value={newType}
                 onChange={(e) => setNewType(e.target.value)}
-                className="w-40 bg-white border border-[var(--pantheon-border)] rounded-lg outline-none text-[var(--text-primary)] px-4 py-2 text-sm focus:border-[var(--accent-green)] transition-colors"
+                className="form-control w-40 px-4 py-2 text-sm"
               >
                 <option value="text">Text / Markdown</option>
                 <option value="code">Source Code</option>
@@ -89,7 +89,7 @@ export default function ArtifactsClient({ artifacts }: { artifacts: any[] }) {
               placeholder="Artifact content..."
               value={newContent}
               onChange={(e) => setNewContent(e.target.value)}
-              className="w-full bg-white border border-[var(--pantheon-border)] rounded-lg outline-none text-[var(--text-primary)] px-4 py-3 focus:border-[var(--accent-green)] transition-colors text-sm min-h-[150px] font-mono resize-y"
+              className="form-control min-h-[150px] w-full resize-y px-4 py-3 font-mono text-sm"
               required
             />
             <div className="flex justify-end gap-3">
@@ -103,7 +103,7 @@ export default function ArtifactsClient({ artifacts }: { artifacts: any[] }) {
               <button
                 type="submit"
                 disabled={isPending}
-                className="flex items-center gap-2 rounded-[8px] bg-[var(--accent-green)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#152F22] disabled:opacity-50"
+                className="flex items-center gap-2 rounded-[8px] bg-[var(--accent-green)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-green-hover)] disabled:opacity-50"
               >
                 Save Artifact
               </button>
@@ -113,9 +113,9 @@ export default function ArtifactsClient({ artifacts }: { artifacts: any[] }) {
       )}
 
       {selectedArtifact && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-full flex flex-col overflow-hidden border border-[rgba(174,144,100,0.4)]">
-            <div className="flex items-center justify-between p-4 border-b border-[rgba(174,144,100,0.18)] bg-[rgba(255,253,248,0.72)]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--overlay)] p-6 backdrop-blur-sm">
+          <div className="flex max-h-full w-full max-w-4xl flex-col overflow-hidden rounded-[14px] border border-[var(--border-soft)] bg-[var(--surface-raised)] shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[var(--border-soft)] bg-[var(--control-muted)] p-4">
               <h2 className="font-serif text-xl font-semibold text-[var(--text-primary)]">
                 {selectedArtifact.title}
               </h2>
@@ -123,8 +123,8 @@ export default function ArtifactsClient({ artifacts }: { artifacts: any[] }) {
                 Close
               </button>
             </div>
-            <div className="p-6 overflow-y-auto bg-[rgba(255,253,248,0.3)] flex-1">
-              <pre className="text-sm text-[var(--text-primary)] whitespace-pre-wrap font-mono bg-white p-4 rounded-lg border border-[rgba(174,144,100,0.2)]">
+            <div className="flex-1 overflow-y-auto bg-[var(--control-subtle)] p-6">
+              <pre className="rounded-lg border border-[var(--border-soft)] bg-[var(--control)] p-4 font-mono text-sm whitespace-pre-wrap text-[var(--text-primary)]">
                 {selectedArtifact.content}
               </pre>
             </div>
@@ -132,14 +132,14 @@ export default function ArtifactsClient({ artifacts }: { artifacts: any[] }) {
         </div>
       )}
 
-      <div className="mb-6 flex items-center bg-white border border-[var(--pantheon-border)] rounded-lg px-4 py-2">
+      <div className="form-control mb-6 flex items-center px-4 py-2">
         <Search className="w-5 h-5 text-[var(--text-muted)] mr-2" />
         <input 
           type="text" 
           placeholder="Search artifacts..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="flex-1 bg-transparent outline-none text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)]"
+          className="flex-1 bg-transparent text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-subtle)]"
         />
       </div>
 
@@ -162,7 +162,7 @@ export default function ArtifactsClient({ artifacts }: { artifacts: any[] }) {
                 <div key={artifact.id} className="stone-card architectural-corners p-4 flex flex-col justify-between group cursor-pointer transition hover:border-[var(--accent-green)]" onClick={() => setSelectedArtifact(artifact)}>
                   <div>
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="w-8 h-8 rounded-lg bg-[rgba(255,253,248,0.72)] border border-[rgba(174,144,100,0.28)] flex items-center justify-center text-[var(--accent-bronze)]">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border-soft)] bg-[var(--control-muted)] text-[var(--accent-bronze)]">
                         <Icon className="w-4 h-4" />
                       </div>
                       <span className="text-[10px] uppercase font-bold text-[var(--text-muted)] tracking-wider">

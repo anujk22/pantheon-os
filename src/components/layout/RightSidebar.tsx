@@ -58,7 +58,7 @@ export function RightSidebar() {
       >
         <Link
           href="/"
-          className="mb-3 flex w-full items-center justify-center gap-2 rounded-[6px] border border-[var(--accent-green)] bg-[rgba(255,253,248,0.72)] px-3 py-2 text-sm font-semibold text-[var(--accent-green)] transition hover:bg-[var(--accent-green)] hover:text-white"
+          className="mb-3 flex w-full items-center justify-center gap-2 rounded-[6px] border border-[var(--accent-green)] bg-[var(--control-muted)] px-3 py-2 text-sm font-semibold text-[var(--accent-green)] transition hover:bg-[var(--accent-green)] hover:text-white"
         >
           <Plus className="h-4 w-4" />
           New Chat
@@ -76,13 +76,13 @@ export function RightSidebar() {
                   <Link
                     key={chat.id}
                     href={`/?chat=${chat.id}`}
-                    className="group relative flex items-center justify-between rounded-[6px] border border-transparent px-3 py-2 text-sm text-[var(--text-primary)] transition hover:border-[rgba(174,144,100,0.34)] hover:bg-[rgba(255,255,255,0.5)]"
+                    className="group relative flex items-center justify-between rounded-[6px] border border-transparent px-3 py-2 text-sm text-[var(--text-primary)] transition hover:border-[var(--border-soft)] hover:bg-[var(--surface-hover)]"
                   >
                     <span className="truncate pr-4">{chat.title || "New Chat"}</span>
                     <div className="absolute right-2 hidden items-center gap-1 group-hover:flex">
                       <button
                         onClick={(e) => handleSetFolder(chat.id, chat.folder, e)}
-                        className="rounded p-1 text-[var(--text-muted)] hover:bg-[rgba(174,144,100,0.2)] hover:text-[var(--accent-bronze)]"
+                        className="rounded p-1 text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--accent-bronze)]"
                         title="Move to folder"
                       >
                         <Plus className="h-3 w-3" />

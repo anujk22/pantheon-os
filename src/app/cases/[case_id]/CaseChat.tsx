@@ -37,7 +37,7 @@ export default function CaseChat({ caseId }: { caseId: string }) {
 
   return (
     <div className="stone-card flex flex-col h-[500px] xl:h-full overflow-hidden">
-      <div className="border-b border-[rgba(174,144,100,0.18)] p-4 bg-[rgba(255,253,248,0.72)] flex items-center gap-2">
+      <div className="flex items-center gap-2 border-b border-[var(--border-soft)] bg-[var(--control-muted)] p-4">
         <Sparkles className="w-5 h-5 text-[var(--accent-green)]" />
         <h2 className="font-serif text-lg font-semibold text-[var(--text-primary)]">
           Case Intelligence
@@ -63,9 +63,9 @@ export default function CaseChat({ caseId }: { caseId: string }) {
                 <div className={`px-3 py-2 rounded-xl text-sm ${
                   isUser 
                     ? "bg-[var(--accent-green)] text-white rounded-br-sm" 
-                    : "bg-[rgba(255,253,248,0.9)] border border-[rgba(174,144,100,0.28)] text-[var(--text-primary)] rounded-bl-sm"
+                    : "border border-[var(--border-soft)] bg-[var(--control-muted)] text-[var(--text-primary)] rounded-bl-sm"
                 }`}>
-                  {/* @ts-ignore */}
+                  {/* @ts-expect-error UIMessage content is present on persisted messages */}
                 {message.content}
                 </div>
               </div>
@@ -78,7 +78,7 @@ export default function CaseChat({ caseId }: { caseId: string }) {
             <span className="text-[10px] font-bold tracking-wider text-[var(--text-muted)] uppercase mb-1">
               Athena
             </span>
-            <div className="px-3 py-2 rounded-xl text-sm bg-[rgba(255,253,248,0.9)] border border-[rgba(174,144,100,0.28)] text-[var(--text-primary)] rounded-bl-sm flex items-center gap-2">
+            <div className="flex items-center gap-2 rounded-xl rounded-bl-sm border border-[var(--border-soft)] bg-[var(--control-muted)] px-3 py-2 text-sm text-[var(--text-primary)]">
               <span className="flex gap-1">
                 <span className="w-1.5 h-1.5 bg-[var(--accent-green)] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
                 <span className="w-1.5 h-1.5 bg-[var(--accent-green)] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
@@ -91,25 +91,25 @@ export default function CaseChat({ caseId }: { caseId: string }) {
       </div>
 
       {error && (
-        <div className="px-4 py-2 bg-[#fff7f4]/80 border-t border-[#b94d3f]/25 text-xs text-[#7b2d25] flex items-center gap-2">
+        <div className="danger-callout flex items-center gap-2 border-x-0 border-b-0 px-4 py-2 text-xs">
           <AlertCircle className="w-3 h-3" /> Failed to connect to LLM.
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="border-t border-[rgba(174,144,100,0.18)] p-3 bg-white flex items-center gap-2">
+      <form onSubmit={handleSubmit} className="flex items-center gap-2 border-t border-[var(--border-soft)] bg-[var(--control-muted)] p-3">
         <input
           ref={inputRef}
           name="message"
           type="text"
           placeholder="Message..."
-          className="flex-1 bg-[rgba(255,253,248,0.5)] border border-[rgba(174,144,100,0.28)] rounded-[6px] outline-none text-[var(--text-primary)] px-3 py-2 text-sm focus:border-[var(--accent-green)] transition-colors"
+          className="form-control flex-1 px-3 py-2 text-sm"
           disabled={status !== "ready"}
           autoComplete="off"
         />
         <button
           type="submit"
           disabled={status !== "ready"}
-          className="h-[38px] w-[38px] rounded-[6px] bg-[var(--accent-green)] text-white flex items-center justify-center transition hover:bg-[#152F22] disabled:opacity-50"
+          className="flex h-[38px] w-[38px] items-center justify-center rounded-[6px] bg-[var(--accent-green)] text-white transition hover:bg-[var(--accent-green-hover)] disabled:opacity-50"
         >
           {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
         </button>

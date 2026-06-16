@@ -33,7 +33,7 @@ function Avatar({ role }: { role: "user" | "assistant" }) {
   }
 
   return (
-    <div className="relative h-[58px] w-[58px] shrink-0 overflow-hidden rounded-full border border-[rgba(174,144,100,0.45)] bg-[#eee5d8] shadow-[0_6px_16px_rgba(72,56,38,0.12)]">
+    <div className="relative h-[58px] w-[58px] shrink-0 overflow-hidden rounded-full border border-[var(--border-soft)] bg-[var(--control-muted)] shadow-[0_6px_16px_rgba(72,56,38,0.12)]">
       <Image
         src="/athena.png"
         alt="Athena"
@@ -68,7 +68,7 @@ function EmptyCommandState() {
   return (
     <div className="flex h-full items-center justify-center px-4 text-center">
       <div className="max-w-xl">
-        <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full border border-[rgba(174,144,100,0.34)] bg-[rgba(255,253,248,0.66)] shadow-[inset_0_1px_4px_rgba(72,56,38,0.07)]">
+        <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full border border-[var(--border-soft)] bg-[var(--control-muted)] shadow-[inset_0_1px_4px_rgba(72,56,38,0.07)]">
           <Sparkles className="h-7 w-7 text-[var(--accent-green)]" />
         </div>
         <h2 className="font-serif text-2xl font-semibold tracking-[0.08em] text-[var(--text-primary)]">
@@ -152,7 +152,7 @@ function LiveMessages({
                         <Image src={file.data} alt="Attachment" fill className="object-cover" />
                       </div>
                     ) : (
-                      <div key={i} className="flex items-center gap-2 rounded-[6px] border border-[rgba(174,144,100,0.34)] bg-[rgba(255,255,255,0.5)] px-3 py-2 text-sm text-[var(--text-muted)]">
+                      <div key={i} className="flex items-center gap-2 rounded-[6px] border border-[var(--border-soft)] bg-[var(--control-subtle)] px-3 py-2 text-sm text-[var(--text-muted)]">
                         <Paperclip className="h-4 w-4" />
                         Attached File
                       </div>
@@ -182,7 +182,7 @@ function ChatError({
   onRetry: () => void;
 }) {
   return (
-    <div className="mb-3 flex flex-col gap-3 rounded-[8px] border border-[#b94d3f]/25 bg-[#fff7f4]/80 p-3 text-sm text-[#7b2d25] min-[720px]:flex-row min-[720px]:items-center min-[720px]:justify-between">
+    <div className="danger-callout mb-3 flex flex-col gap-3 rounded-[8px] p-3 text-sm min-[720px]:flex-row min-[720px]:items-center min-[720px]:justify-between">
       <div className="flex min-w-0 items-start gap-2">
         <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
         <p className="leading-relaxed">{message}</p>
@@ -190,7 +190,7 @@ function ChatError({
       <button
         type="button"
         onClick={onRetry}
-        className="shrink-0 rounded-[6px] border border-[#b94d3f]/25 bg-white/70 px-3 py-1.5 text-xs font-semibold text-[#7b2d25] transition hover:bg-white"
+        className="shrink-0 rounded-[6px] border border-[var(--danger-border)] bg-[var(--control-muted)] px-3 py-1.5 text-xs font-semibold transition hover:bg-[var(--control)]"
       >
         Retry
       </button>
@@ -295,7 +295,7 @@ function ChatWindow({ initialMessages, chatId }: { initialMessages: any[]; chatI
         {selectedFiles.length > 0 && (
           <div className="mb-3 flex flex-wrap gap-2">
             {selectedFiles.map((file, i) => (
-              <div key={i} className="flex items-center gap-2 rounded-[6px] border border-[var(--accent-green)] bg-[rgba(255,253,248,0.72)] px-2 py-1 text-xs text-[var(--accent-green)]">
+              <div key={i} className="flex items-center gap-2 rounded-[6px] border border-[var(--accent-green)] bg-[var(--control-muted)] px-2 py-1 text-xs text-[var(--accent-green)]">
                 <Paperclip className="h-3 w-3" />
                 <span className="truncate max-w-[120px]">{file.name}</span>
                 <button type="button" onClick={() => removeFile(i)} className="ml-1 hover:text-[var(--text-primary)]">
@@ -315,7 +315,7 @@ function ChatWindow({ initialMessages, chatId }: { initialMessages: any[]; chatI
             name="message"
             type="text"
             placeholder="Message Athena..."
-            className="mb-3 h-8 w-full bg-transparent px-2 text-base text-[var(--text-primary)] outline-none placeholder:text-[#6f665c]"
+            className="mb-3 h-8 w-full bg-transparent px-2 text-base text-[var(--text-primary)] outline-none placeholder:text-[var(--text-subtle)]"
             disabled={status !== "ready"}
           />
 
@@ -323,7 +323,7 @@ function ChatWindow({ initialMessages, chatId }: { initialMessages: any[]; chatI
             <div className="flex min-w-0 items-center gap-2 text-[var(--text-primary)] min-[720px]:gap-4">
               <label
                 title="Attach file"
-                className="grid h-8 w-8 cursor-pointer place-items-center rounded-[6px] text-[var(--text-muted)] transition hover:bg-[rgba(255,255,255,0.3)] hover:text-[var(--text-primary)]"
+                className="grid h-8 w-8 cursor-pointer place-items-center rounded-[6px] text-[var(--text-muted)] transition hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
               >
                 <input
                   type="file"
@@ -355,7 +355,7 @@ function ChatWindow({ initialMessages, chatId }: { initialMessages: any[]; chatI
               <button
                 type="submit"
                 disabled={status !== "ready"}
-                className="flex h-11 w-11 items-center justify-center gap-3 rounded-l-[7px] border border-[rgba(174,144,100,0.34)] bg-[rgba(255,253,248,0.72)] text-sm font-bold tracking-[0.22em] text-[var(--accent-green)] shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] transition hover:border-[var(--accent-green)] hover:bg-white disabled:opacity-50 min-[720px]:w-auto min-[720px]:justify-start min-[720px]:px-6"
+                className="flex h-11 w-11 items-center justify-center gap-3 rounded-l-[7px] border border-[var(--border-soft)] bg-[var(--control-muted)] text-sm font-bold tracking-[0.22em] text-[var(--accent-green)] shadow-[inset_0_1px_0_rgba(255,255,255,0.14)] transition hover:border-[var(--accent-green)] hover:bg-[var(--control)] disabled:opacity-50 min-[720px]:w-auto min-[720px]:justify-start min-[720px]:px-6"
               >
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -368,7 +368,7 @@ function ChatWindow({ initialMessages, chatId }: { initialMessages: any[]; chatI
                 type="button"
                 disabled
                 title="Send options are not connected yet."
-                className="grid h-11 w-[52px] place-items-center rounded-r-[7px] border-y border-r border-[rgba(32,56,43,0.36)] bg-[var(--accent-green)] text-white opacity-80"
+                className="grid h-11 w-[52px] place-items-center rounded-r-[7px] border-y border-r border-[var(--accent-green)] bg-[var(--accent-green)] text-white opacity-80"
               >
                 <ChevronDown className="h-4 w-4" />
               </button>

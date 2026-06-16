@@ -51,10 +51,10 @@ export default async function CasesIndexPage() {
               <Link href={`/cases/${caseItem.id}`} key={caseItem.id}>
                 <article className="stone-card p-5 transition hover:border-[var(--accent-green)]">
                   <div className="mb-4 flex items-start justify-between gap-4">
-                    <div className="grid h-10 w-10 place-items-center rounded-[8px] border border-[rgba(174,144,100,0.28)] bg-[rgba(255,253,248,0.66)]">
+                    <div className="grid h-10 w-10 place-items-center rounded-[8px] border border-[var(--border-soft)] bg-[var(--control-muted)]">
                       <FolderKanban className="h-5 w-5 text-[var(--accent-green)]" />
                     </div>
-                    <span className="rounded-[5px] border border-[rgba(174,144,100,0.28)] bg-[rgba(255,253,248,0.72)] px-3 py-1.5 text-xs font-semibold text-[var(--accent-green)]">
+                    <span className="rounded-[5px] border border-[var(--border-soft)] bg-[var(--control-muted)] px-3 py-1.5 text-xs font-semibold text-[var(--accent-green)]">
                       {caseItem.status}
                     </span>
                   </div>

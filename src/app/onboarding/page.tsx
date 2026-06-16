@@ -2,31 +2,31 @@ import { CheckCircle, Cpu } from "lucide-react";
 
 export default function OnboardingPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-pantheon-bg overflow-hidden p-6 relative">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--bg-limestone)] p-6">
       <div
         className="absolute inset-0 opacity-35 pointer-events-none bg-cover bg-center"
         style={{ backgroundImage: "url('/marble.png')" }}
       />
-      <div className="absolute inset-x-0 top-0 h-1 bg-[#1B3B2B]" />
+      <div className="absolute inset-x-0 top-0 h-1 bg-[var(--accent-green)]" />
 
-      <div className="max-w-md w-full bg-white border border-[#D8D8D0] p-8 rounded-2xl shadow-xl relative">
+      <div className="relative w-full max-w-md rounded-2xl border border-[var(--border-stone)] bg-[var(--surface-raised)] p-8 shadow-xl">
         <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 rounded-2xl bg-pantheon-emerald-main flex items-center justify-center border border-pantheon-emerald-light shadow-sm">
-            <span className="font-serif font-bold text-pantheon-surface text-3xl">P</span>
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--border-soft)] bg-[var(--accent-green)] shadow-sm">
+            <span className="font-serif text-3xl font-bold text-white">P</span>
           </div>
         </div>
 
-        <h1 className="font-serif text-3xl font-bold text-center text-pantheon-text-primary mb-2">
+        <h1 className="mb-2 text-center font-serif text-3xl font-bold text-[var(--text-primary)]">
           Welcome to Pantheon
         </h1>
-        <p className="text-center text-pantheon-text-secondary text-sm mb-8">
+        <p className="mb-8 text-center text-sm text-[var(--text-muted)]">
           Your private, local Agentic Operating System. All your data stays strictly on
           your machine.
         </p>
 
         <form action="/api/onboarding" method="post" className="space-y-6">
           <div>
-            <label className="block text-xs font-semibold text-pantheon-text-primary uppercase tracking-wider mb-2">
+            <label className="mb-2 block text-xs font-semibold tracking-wider text-[var(--text-primary)] uppercase">
               Your Name
             </label>
             <input
@@ -34,18 +34,18 @@ export default function OnboardingPage() {
               type="text"
               required
               placeholder="How should the OS address you?"
-              className="w-full bg-pantheon-bg border border-pantheon-border rounded-lg outline-none text-pantheon-text-primary placeholder-pantheon-text-secondary/70 px-4 py-3 focus:border-pantheon-emerald-main transition-colors text-sm"
+              className="form-control w-full px-4 py-3 text-sm"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-pantheon-text-primary uppercase tracking-wider mb-2">
+            <label className="mb-2 block text-xs font-semibold tracking-wider text-[var(--text-primary)] uppercase">
               LLM Provider
             </label>
             <select
               name="llmProvider"
               defaultValue="lmstudio"
-              className="w-full bg-pantheon-bg border border-pantheon-border rounded-lg outline-none text-pantheon-text-primary px-4 py-3 focus:border-pantheon-emerald-main transition-colors text-sm"
+              className="form-control w-full px-4 py-3 text-sm"
             >
               <option value="lmstudio">LM Studio (Local)</option>
               <option value="openai">OpenAI</option>
@@ -54,7 +54,7 @@ export default function OnboardingPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-pantheon-text-primary uppercase tracking-wider mb-2">
+            <label className="mb-2 block text-xs font-semibold tracking-wider text-[var(--text-primary)] uppercase">
               Base URL
             </label>
             <input
@@ -62,28 +62,28 @@ export default function OnboardingPage() {
               type="text"
               defaultValue="http://127.0.0.1:1234/v1"
               placeholder="http://127.0.0.1:1234/v1"
-              className="w-full bg-pantheon-bg border border-pantheon-border rounded-lg outline-none text-pantheon-text-primary placeholder-pantheon-text-secondary/70 px-4 py-3 focus:border-pantheon-emerald-main transition-colors text-sm"
+              className="form-control w-full px-4 py-3 text-sm"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-pantheon-text-primary uppercase tracking-wider mb-2">
+            <label className="mb-2 block text-xs font-semibold tracking-wider text-[var(--text-primary)] uppercase">
               API Key (optional)
             </label>
             <input
               name="llmApiKey"
               type="password"
               placeholder="Only needed for hosted providers"
-              className="w-full bg-pantheon-bg border border-pantheon-border rounded-lg outline-none text-pantheon-text-primary placeholder-pantheon-text-secondary/70 px-4 py-3 focus:border-pantheon-emerald-main transition-colors text-sm"
+              className="form-control w-full px-4 py-3 text-sm"
             />
           </div>
 
-          <div className="p-4 bg-pantheon-bg border border-pantheon-border rounded-lg">
-            <h3 className="text-sm font-medium text-pantheon-text-primary flex items-center mb-2">
-              <Cpu className="w-4 h-4 mr-2 text-pantheon-emerald-main" />
+          <div className="soft-surface rounded-lg p-4">
+            <h3 className="mb-2 flex items-center text-sm font-medium text-[var(--text-primary)]">
+              <Cpu className="w-4 h-4 mr-2 text-[var(--accent-green)]" />
               Local Data Directory
             </h3>
-            <p className="text-xs text-pantheon-text-secondary leading-relaxed">
+            <p className="text-xs leading-relaxed text-[var(--text-muted)]">
               Pantheon stores SQLite and vector context locally. Cloud providers are
               optional, not required.
             </p>
@@ -91,7 +91,7 @@ export default function OnboardingPage() {
 
           <button
             type="submit"
-            className="w-full flex justify-center items-center py-3 bg-pantheon-emerald-main hover:bg-pantheon-emerald-dark text-white rounded-lg font-medium shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-pantheon-emerald-main/25"
+            className="flex w-full items-center justify-center rounded-lg bg-[var(--accent-green)] py-3 font-medium text-white shadow-sm transition-all hover:bg-[var(--accent-green-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-green)]"
           >
             <CheckCircle className="w-5 h-5 mr-2" />
             Initialize System

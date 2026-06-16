@@ -142,3 +142,21 @@ model MorningBriefing {
   content   String
   createdAt DateTime @default(now())
 }
+
+model AgentAction {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  kind        String    // create_task, save_artifact, save_memory, create_case, archive_inbox, external_draft
+  status      String    @default("pending") // pending, approved, rejected, executed, failed
+  sourceType  String    @default("manual") // inbox, chat, cadence, manual, integration
+  sourceRef   String?
+  payloadJson String
+  resultJson  String?
+  error       String?
+  createdBy   String    @default("athena")
+  approvedAt  DateTime?
+  executedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}

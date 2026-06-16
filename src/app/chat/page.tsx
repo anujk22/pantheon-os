@@ -23,30 +23,30 @@ export default async function ChatPage() {
   );
 
   return (
-    <div className="h-full w-full flex flex-col bg-white/40 backdrop-blur-md rounded-2xl border border-white shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] overflow-hidden">
-      <header className="px-8 py-6 border-b border-white/70 flex items-center justify-between">
+    <div className="stone-panel architectural-corners flex h-full w-full flex-col overflow-hidden">
+      <header className="relative z-10 flex items-center justify-between border-b border-[var(--border-soft)] bg-[var(--surface-soft)] px-8 py-6">
         <div>
-          <h1 className="text-3xl font-serif text-[#1a1f1c]">Chat Memory</h1>
-          <p className="text-sm text-[#4A5D53] mt-1">
+          <h1 className="font-serif text-3xl text-[var(--text-primary)]">Chat Memory</h1>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">
             {sessions.length} sessions · {totalMessages} persisted messages
           </p>
         </div>
         <div className="text-right">
-          <p className="text-[10px] uppercase tracking-widest text-[#C5A059] font-bold">
+          <p className="text-[10px] font-bold tracking-widest text-[var(--accent-bronze)] uppercase">
             SQLite
           </p>
-          <p className="text-xs text-[#4A5D53]">Local transcript store</p>
+          <p className="text-xs text-[var(--text-muted)]">Local transcript store</p>
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
+      <div className="relative z-10 flex-1 overflow-y-auto p-6 custom-scrollbar">
         {sessions.length === 0 ? (
           <div className="h-full flex items-center justify-center text-center">
             <div>
-              <h2 className="font-serif text-2xl text-[#1a1f1c]">
+              <h2 className="font-serif text-2xl text-[var(--text-primary)]">
                 No persisted conversations
               </h2>
-              <p className="text-sm text-[#4A5D53] mt-2 max-w-md">
+              <p className="mt-2 max-w-md text-sm text-[var(--text-muted)]">
                 Start a conversation in Command Layer and completed turns will
                 appear here.
               </p>
@@ -57,30 +57,30 @@ export default async function ChatPage() {
             {sessions.map((session) => (
               <article
                 key={session.id}
-                className="bg-white/70 border border-white rounded-xl shadow-sm overflow-hidden"
+                className="stone-card overflow-hidden"
               >
-                <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between gap-4">
+                <div className="flex items-center justify-between gap-4 border-b border-[var(--border-soft)] px-5 py-4">
                   <div>
-                    <h2 className="font-serif text-lg font-bold text-[#1a1f1c]">
+                    <h2 className="font-serif text-lg font-bold text-[var(--text-primary)]">
                       {session.title}
                     </h2>
-                    <p className="text-xs text-[#4A5D53] mt-1">
+                    <p className="mt-1 text-xs text-[var(--text-muted)]">
                       {session._count.messages} messages · Updated{" "}
                       {formatDate(session.updatedAt)}
                     </p>
                   </div>
-                  <span className="text-[10px] uppercase tracking-widest text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-full px-3 py-1 font-bold">
+                  <span className="success-badge rounded-full px-3 py-1 text-[10px] font-bold tracking-widest uppercase">
                     {session.isSummarized ? "Summarized" : "Raw"}
                   </span>
                 </div>
 
-                <div className="divide-y divide-gray-100">
+                <div className="divide-y divide-[var(--border-soft)]">
                   {session.summary ? (
                     <div className="px-5 py-4">
-                      <p className="text-[10px] uppercase tracking-widest text-[#C5A059] font-bold mb-2">
+                      <p className="mb-2 text-[10px] font-bold tracking-widest text-[var(--accent-bronze)] uppercase">
                         Summary
                       </p>
-                      <p className="text-sm text-[#1a1f1c] leading-relaxed">
+                      <p className="text-sm leading-relaxed text-[var(--text-primary)]">
                         {session.summary}
                       </p>
                     </div>
@@ -89,10 +89,10 @@ export default async function ChatPage() {
                   {session.messages.map((message) => (
                     <div key={message.id} className="px-5 py-3">
                       <div className="flex items-start gap-3">
-                        <span className="w-20 shrink-0 text-[10px] uppercase tracking-widest text-[#4A5D53] font-bold">
+                        <span className="w-20 shrink-0 text-[10px] font-bold tracking-widest text-[var(--text-muted)] uppercase">
                           {message.role}
                         </span>
-                        <p className="text-sm text-[#1a1f1c] leading-relaxed whitespace-pre-wrap">
+                        <p className="text-sm leading-relaxed whitespace-pre-wrap text-[var(--text-primary)]">
                           {message.content}
                         </p>
                       </div>

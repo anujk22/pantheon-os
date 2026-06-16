@@ -78,7 +78,7 @@ async function runMemoryCompression() {
             baseURL = `${baseURL}/v1`;
           }
           apiKey = userApiKey || "lm-studio";
-          modelName = process.env.LOCAL_LLM_MODEL || "local-model";
+          modelName = process.env.LOCAL_LLM_MODEL || await resolveLocalModelName(baseURL, apiKey);
         }
       }
 
@@ -95,17 +95,41 @@ async function runMemoryCompression() {
         }
       );
 
-      const compressedText = response.data?.choices?.[0]?.message?.content;
+      const message = response.data?.choices?.[0]?.message;
+      const compressedText = message?.content || message?.reasoning_content;
 
       if (!compressedText) throw new Error("LLM returned empty compression");
 
-      // 3. Embed the compressed summary into ChromaDB
-      const collection = await chroma.getOrCreateCollection({ name: "pantheon_memories" });
-      await collection.add({
-        ids: [`summary_${session.id}`],
-        documents: [compressedText],
-        metadatas: [{ sessionId: session.id, timestamp: Date.now(), type: "compressed_summary" }]
+      // 3. Save the summary locally first. Chroma is optional and must not block auditability.
+      await prisma.memory.upsert({
+        where: { id: `summary_${session.id}` },
+        update: {
+          content: compressedText,
+          memoryType: "conversation_summary",
+          sourceType: "chat_summary",
+          sourceRef: session.id,
+          confidence: 0.7,
+        },
+        create: {
+          id: `summary_${session.id}`,
+          content: compressedText,
+          memoryType: "conversation_summary",
+          sourceType: "chat_summary",
+          sourceRef: session.id,
+          confidence: 0.7,
+        },
       });
+
+      try {
+        const collection = await chroma.getOrCreateCollection({ name: "pantheon_memories" });
+        await collection.upsert({
+          ids: [`summary_${session.id}`],
+          documents: [compressedText],
+          metadatas: [{ sessionId: session.id, timestamp: Date.now(), type: "compressed_summary" }],
+        });
+      } catch (chromaError) {
+        console.warn(`Chroma unavailable for ${session.id}; Prisma memory was saved.`, chromaError);
+      }
 
       // 4. Update Prisma (Mark as summarized and save summary text)
       await prisma.chatSession.update({
@@ -116,12 +140,7 @@ async function runMemoryCompression() {
         }
       });
 
-      // 5. Delete raw logs to save local disk space (as requested for high optimization)
-      await prisma.chatMessage.deleteMany({
-        where: { sessionId: session.id }
-      });
-
-      console.log(`✅ Successfully compressed and embedded session ${session.id}. Raw logs purged.`);
+      console.log(`Successfully compressed session ${session.id}. Raw logs preserved.`);
     } catch (error) {
       console.error(`❌ Failed to compress session ${session.id}:`, error);
     }
@@ -132,3 +151,48 @@ async function runMemoryCompression() {
 runMemoryCompression()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+
+async function resolveLocalModelName(baseURL: string, apiKey: string) {
+  try {
+    const response = await axios.get(`${baseURL.replace(/\/+$/, "")}/models`, {
+      headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : undefined,
+      timeout: 5000,
+    });
+    const candidates = response.data?.data
+      ?.map((model: { id?: unknown }) => model.id)
+      .filter((id: unknown): id is string => typeof id === "string" && id.trim() !== "")
+      .filter((id: string) => !id.toLowerCase().includes("embed"));
+
+    for (const candidate of candidates ?? []) {
+      if (await probeLocalChatModel(baseURL, apiKey, candidate)) {
+        return candidate;
+      }
+    }
+
+    return candidates?.[0] ?? "local-model";
+  } catch {
+    return "local-model";
+  }
+}
+
+async function probeLocalChatModel(baseURL: string, apiKey: string, modelName: string) {
+  try {
+    const response = await axios.post(
+      `${baseURL.replace(/\/+$/, "")}/chat/completions`,
+      {
+        model: modelName,
+        messages: [{ role: "user", content: "Reply with OK." }],
+        max_tokens: 64,
+        stream: false,
+      },
+      {
+        headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : undefined,
+        timeout: 5000,
+      }
+    );
+    const message = response.data?.choices?.[0]?.message;
+    return Boolean(message?.content || message?.reasoning_content);
+  } catch {
+    return false;
+  }
+}

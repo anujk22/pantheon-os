@@ -55,6 +55,7 @@ export default function CaseChat({ caseId }: { caseId: string }) {
         ) : (
           messages.map((message, i) => {
             const isUser = message.role === "user";
+            const text = getMessageText(message);
             return (
               <div key={i} className={`flex flex-col ${isUser ? "items-end" : "items-start"}`}>
                 <span className="text-[10px] font-bold tracking-wider text-[var(--text-muted)] uppercase mb-1">
@@ -65,8 +66,7 @@ export default function CaseChat({ caseId }: { caseId: string }) {
                     ? "bg-[var(--accent-green)] text-white rounded-br-sm" 
                     : "border border-[var(--border-soft)] bg-[var(--control-muted)] text-[var(--text-primary)] rounded-bl-sm"
                 }`}>
-                  {/* @ts-expect-error UIMessage content is present on persisted messages */}
-                {message.content}
+                  {text}
                 </div>
               </div>
             );
@@ -116,4 +116,23 @@ export default function CaseChat({ caseId }: { caseId: string }) {
       </form>
     </div>
   );
+}
+
+type MessageTextPart = {
+  type: string;
+  text?: string;
+};
+
+type MessageWithText = {
+  content?: string;
+  parts?: MessageTextPart[];
+};
+
+function getMessageText(message: MessageWithText) {
+  const partText = message.parts
+    ?.filter((part) => part.type === "text")
+    .map((part) => part.text ?? "")
+    .join("");
+
+  return partText || message.content || "";
 }

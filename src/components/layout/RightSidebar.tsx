@@ -1,12 +1,52 @@
-/* eslint-disable */
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { CalendarDays, MessageSquare, Plus, ShieldCheck, SunMedium } from "lucide-react";
 
+type ChatSummary = {
+  id: string;
+  title: string | null;
+  folder: string | null;
+};
+
+type RailEvent = {
+  id: string;
+  title: string;
+  date: string;
+  source: string;
+};
+
+type RailCase = {
+  id: string;
+  title: string;
+  status: string;
+  _count: {
+    tasks: number;
+    artifacts: number;
+    memories: number;
+  };
+};
+
+type RailState = {
+  briefing: { content: string; date: string } | null;
+  events: RailEvent[];
+  activeCase: RailCase | null;
+};
+
 export function RightSidebar() {
-  const [chats, setChats] = useState<any[]>([]);
+  const pathname = usePathname();
+  const [chats, setChats] = useState<ChatSummary[]>([]);
+  const [railState, setRailState] = useState<RailState>({
+    briefing: null,
+    events: [],
+    activeCase: null,
+  });
+
+  const activeCaseId = pathname.startsWith("/cases/")
+    ? pathname.split("/")[2] || null
+    : null;
 
   const fetchChats = () => {
     fetch("/api/chat/history")
@@ -15,9 +55,21 @@ export function RightSidebar() {
       .catch((err) => console.error(err));
   };
 
+  const fetchRailState = useCallback(() => {
+    const suffix = activeCaseId ? `?caseId=${encodeURIComponent(activeCaseId)}` : "";
+    fetch(`/api/right-rail${suffix}`)
+      .then((res) => res.json())
+      .then((data: RailState) => setRailState(data))
+      .catch((err) => console.error(err));
+  }, [activeCaseId]);
+
   useEffect(() => {
     fetchChats();
   }, []);
+
+  useEffect(() => {
+    fetchRailState();
+  }, [fetchRailState]);
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -42,7 +94,7 @@ export function RightSidebar() {
     }
   };
 
-  const groupedChats = chats.reduce((acc: any, chat: any) => {
+  const groupedChats = chats.reduce<Record<string, ChatSummary[]>>((acc, chat) => {
     const folder = chat.folder || "Uncategorized";
     if (!acc[folder]) acc[folder] = [];
     acc[folder].push(chat);
@@ -50,7 +102,7 @@ export function RightSidebar() {
   }, {});
 
   return (
-    <aside className="hidden h-full w-[316px] shrink-0 flex-col gap-2 overflow-y-auto pb-1 min-[1180px]:flex min-[1500px]:w-[348px] custom-scrollbar">
+    <aside className="hidden h-full w-[328px] shrink-0 flex-col gap-3 overflow-y-auto pb-1 min-[1180px]:flex min-[1500px]:w-[360px] custom-scrollbar">
       <StatusCard
         icon={<MessageSquare className="h-5 w-5 text-[var(--accent-bronze)]" />}
         title="RECENT CHATS"
@@ -72,7 +124,7 @@ export function RightSidebar() {
                 <h4 className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-1 px-1">
                   {folder}
                 </h4>
-                {groupedChats[folder].map((chat: any) => (
+                {groupedChats[folder].map((chat) => (
                   <Link
                     key={chat.id}
                     href={`/?chat=${chat.id}`}
@@ -106,31 +158,70 @@ export function RightSidebar() {
       <StatusCard
         icon={<SunMedium className="h-5 w-5 text-[var(--accent-bronze)]" />}
         title="MORNING BRIEF"
-        heading="No brief generated"
+        heading={railState.briefing ? "Latest saved brief" : "No brief saved"}
       >
-        Morning briefs are not generated automatically yet. When that workflow is
-        connected, this panel will show the latest saved briefing from local storage.
+        {railState.briefing ? (
+          <p className="line-clamp-5">{railState.briefing.content}</p>
+        ) : (
+          "No Morning Briefing records exist yet. When cadence saves a real brief, it appears here."
+        )}
       </StatusCard>
 
       <StatusCard
         icon={<CalendarDays className="h-5 w-5 text-[var(--accent-bronze)]" />}
         title="TODAY'S CALENDAR"
-        heading="Calendar not connected"
+        heading={railState.events.length > 0 ? `${railState.events.length} saved events` : "No events saved today"}
       >
-        No calendar provider is wired into this screen. Connectors should show real
-        events here only after an integration is configured.
+        {railState.events.length > 0 ? (
+          <div className="space-y-2">
+            {railState.events.map((event) => (
+              <div key={event.id} className="flex items-start gap-2">
+                <span className="w-14 shrink-0 text-xs font-semibold text-[var(--accent-green)]">
+                  {formatTime(event.date)}
+                </span>
+                <span className="min-w-0 flex-1 text-[var(--text-primary)]">
+                  {event.title}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          "No local calendar events are saved for today. External calendars should import events here only after a connector is configured."
+        )}
       </StatusCard>
 
       <StatusCard
         icon={<ShieldCheck className="h-5 w-5 text-[var(--accent-bronze)]" />}
         title="ACTIVE CASE"
-        heading="No active case selected"
+        heading={railState.activeCase ? railState.activeCase.title : "No active case selected"}
       >
-        Cases exist only after you create or triage one from the Inbox. This rail will
-        stay empty until a real case is active.
+        {railState.activeCase ? (
+          <Link
+            href={`/cases/${railState.activeCase.id}`}
+            className="block rounded-[6px] border border-[var(--border-soft)] bg-[var(--control-muted)] p-3 transition hover:border-[var(--accent-green)]"
+          >
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--accent-green)]">
+              {railState.activeCase.status}
+            </p>
+            <p>
+              {railState.activeCase._count.tasks} tasks ·{" "}
+              {railState.activeCase._count.artifacts} artifacts ·{" "}
+              {railState.activeCase._count.memories} memories
+            </p>
+          </Link>
+        ) : (
+          "Cases appear here after you create or triage one from the Inbox."
+        )}
       </StatusCard>
     </aside>
   );
+}
+
+function formatTime(value: string) {
+  return new Date(value).toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit",
+  });
 }
 
 function StatusCard({
@@ -145,14 +236,14 @@ function StatusCard({
   children: React.ReactNode;
 }) {
   return (
-    <section className="stone-card architectural-corners p-5">
-      <div className="mb-4 flex items-center gap-3">
+    <section className="stone-card architectural-corners p-4">
+      <div className="mb-3 flex items-center gap-3 border-b border-[var(--border-soft)] pb-2">
         {icon}
-        <h3 className="font-serif text-[1.02rem] font-semibold tracking-[0.16em]">
+        <h3 className="font-serif text-[0.92rem] font-semibold tracking-[0.2em]">
           {title}
         </h3>
       </div>
-      <h4 className="text-base font-semibold text-[var(--text-primary)] mb-2">
+      <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-2">
         {heading}
       </h4>
       <div className="text-sm leading-relaxed text-[var(--text-muted)]">

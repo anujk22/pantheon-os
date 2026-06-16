@@ -80,7 +80,7 @@ async function runDreamCadence() {
           baseURL = `${baseURL}/v1`;
         }
         apiKey = userApiKey || "lm-studio";
-        modelName = process.env.LOCAL_LLM_MODEL || "local-model";
+        modelName = process.env.LOCAL_LLM_MODEL || await resolveLocalModelName(baseURL, apiKey);
       }
     }
 
@@ -97,7 +97,8 @@ async function runDreamCadence() {
       }
     );
 
-    const content = response.data?.choices?.[0]?.message?.content;
+    const message = response.data?.choices?.[0]?.message;
+    const content = message?.content || message?.reasoning_content;
 
     if (!content) {
       throw new Error("LLM returned no briefing content.");
@@ -126,3 +127,48 @@ async function runDreamCadence() {
 runDreamCadence()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+
+async function resolveLocalModelName(baseURL: string, apiKey: string) {
+  try {
+    const response = await axios.get(`${baseURL.replace(/\/+$/, "")}/models`, {
+      headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : undefined,
+      timeout: 5000,
+    });
+    const candidates = response.data?.data
+      ?.map((model: { id?: unknown }) => model.id)
+      .filter((id: unknown): id is string => typeof id === "string" && id.trim() !== "")
+      .filter((id: string) => !id.toLowerCase().includes("embed"));
+
+    for (const candidate of candidates ?? []) {
+      if (await probeLocalChatModel(baseURL, apiKey, candidate)) {
+        return candidate;
+      }
+    }
+
+    return candidates?.[0] ?? "local-model";
+  } catch {
+    return "local-model";
+  }
+}
+
+async function probeLocalChatModel(baseURL: string, apiKey: string, modelName: string) {
+  try {
+    const response = await axios.post(
+      `${baseURL.replace(/\/+$/, "")}/chat/completions`,
+      {
+        model: modelName,
+        messages: [{ role: "user", content: "Reply with OK." }],
+        max_tokens: 64,
+        stream: false,
+      },
+      {
+        headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : undefined,
+        timeout: 5000,
+      }
+    );
+    const message = response.data?.choices?.[0]?.message;
+    return Boolean(message?.content || message?.reasoning_content);
+  } catch {
+    return false;
+  }
+}

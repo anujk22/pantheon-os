@@ -49,32 +49,34 @@
 }
 
 .dark {
-  --bg-limestone: #021f1b;
-  --bg-marble: #062c26;
-  --surface: rgba(3, 48, 41, 0.84);
-  --surface-raised: rgba(4, 57, 49, 0.94);
-  --surface-soft: rgba(5, 66, 56, 0.62);
-  --surface-hover: rgba(15, 124, 91, 0.24);
-  --control: #052d27;
-  --control-muted: rgba(4, 41, 35, 0.86);
-  --control-subtle: rgba(9, 70, 60, 0.62);
-  --text-primary: #f6e7bf;
-  --text-muted: #d7c7a2;
-  --text-subtle: #aa9b7d;
-  --accent-bronze: #d9b66f;
-  --accent-sage: #55c69a;
-  --accent-green: #45d08e;
-  --accent-green-hover: #2fa972;
-  --border-stone: #9b7a3f;
-  --border-soft: rgba(217, 182, 111, 0.34);
-  --danger-bg: rgba(91, 36, 27, 0.5);
+  --bg-limestone: #001715;
+  --bg-marble: #022b27;
+  --surface: rgba(1, 43, 38, 0.82);
+  --surface-raised: rgba(3, 53, 47, 0.95);
+  --surface-soft: rgba(2, 63, 56, 0.62);
+  --surface-hover: rgba(198, 144, 70, 0.12);
+  --control: #031f1d;
+  --control-muted: rgba(2, 36, 33, 0.9);
+  --control-subtle: rgba(4, 55, 49, 0.7);
+  --text-primary: #f3e1bd;
+  --text-muted: #cdbb91;
+  --text-subtle: #9f8f69;
+  --accent-bronze: #c08a48;
+  --accent-sage: #85be78;
+  --accent-green: #8dcc84;
+  --accent-green-hover: #b3df9d;
+  --border-stone: #8a653d;
+  --border-soft: rgba(192, 138, 72, 0.46);
+  --danger-bg: rgba(91, 36, 27, 0.46);
   --danger-border: rgba(255, 111, 78, 0.38);
-  --danger-text: #ff8e68;
-  --success-bg: rgba(69, 208, 142, 0.16);
-  --success-text: #a8f0c8;
+  --danger-text: #ff9b78;
+  --success-bg: rgba(141, 204, 132, 0.14);
+  --success-text: #bde8ac;
   --overlay: rgba(0, 0, 0, 0.58);
-  --shadow-soft: 0 16px 45px rgba(0, 0, 0, 0.42);
-  --shadow-raised: 0 20px 55px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  --shadow-soft: 0 16px 45px rgba(0, 0, 0, 0.5);
+  --shadow-raised: 0 20px 55px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(243, 225, 189, 0.08);
+  --radius-panel: 8px;
+  --radius-card: 5px;
   --background: var(--bg-limestone);
   --foreground: var(--text-primary);
 }
@@ -95,9 +97,9 @@ body {
 
 .dark body {
   background:
-    radial-gradient(circle at 18% 18%, rgba(8, 104, 84, 0.34), transparent 31%),
-    radial-gradient(circle at 82% 9%, rgba(217, 182, 111, 0.12), transparent 28%),
-    linear-gradient(135deg, #021a17 0%, #042e28 48%, #021f1b 100%);
+    radial-gradient(circle at 28% 12%, rgba(14, 92, 80, 0.36), transparent 34%),
+    radial-gradient(circle at 76% 14%, rgba(192, 138, 72, 0.14), transparent 28%),
+    linear-gradient(135deg, #001412 0%, #01352f 45%, #001a17 100%);
 }
 
 button,
@@ -156,24 +158,40 @@ button:disabled {
 }
 
 .chat-bubble {
-  border-radius: 12px;
-  padding: 14px 16px;
+  max-width: min(820px, 100%);
+  border-radius: 14px;
+  padding: 13px 16px;
   text-align: left;
   font-size: 0.97rem;
-  line-height: 1.65;
-  box-shadow: 0 10px 24px rgba(72, 56, 38, 0.08);
+  line-height: 1.58;
+  overflow-wrap: anywhere;
+  box-shadow: 0 12px 28px rgba(72, 56, 38, 0.12);
 }
 
 .chat-bubble-athena {
-  border: 1px solid var(--border-soft);
-  background: color-mix(in srgb, var(--surface-raised) 86%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border-stone) 72%, var(--control));
+  background: var(--control);
   color: var(--text-primary);
 }
 
 .chat-bubble-user {
-  border: 1px solid color-mix(in srgb, var(--accent-green) 28%, transparent);
-  background: color-mix(in srgb, var(--accent-green) 12%, var(--control));
+  border: 1px solid color-mix(in srgb, var(--accent-green) 46%, var(--control));
+  background: color-mix(in srgb, var(--accent-green) 18%, var(--control));
   color: var(--text-primary);
+}
+
+.dark .chat-bubble {
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.32);
+}
+
+.dark .chat-bubble-athena {
+  background: #062a26;
+  border-color: rgba(192, 138, 72, 0.34);
+}
+
+.dark .chat-bubble-user {
+  background: #143f35;
+  border-color: rgba(141, 204, 132, 0.45);
 }
 
 .chat-markdown > * + * {
@@ -234,6 +252,17 @@ button:disabled {
   background-position: center;
 }
 
+.dark .pantheon-marble {
+  background:
+    radial-gradient(circle at 50% -12%, rgba(20, 98, 86, 0.45), transparent 34%),
+    linear-gradient(90deg, rgba(0, 12, 11, 0.34), rgba(0, 30, 27, 0.1), rgba(0, 12, 11, 0.34)),
+    url("/marble.png"),
+    linear-gradient(135deg, #001412 0%, #023d35 48%, #001b18 100%);
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: normal, normal, multiply, normal;
+}
+
 .stone-panel {
   position: relative;
   border: 1px solid color-mix(in srgb, var(--border-stone) 88%, var(--control));
@@ -255,6 +284,12 @@ button:disabled {
   border-radius: calc(var(--radius-panel) - 6px);
 }
 
+.dark .stone-panel::before {
+  inset: 4px;
+  border-color: rgba(192, 138, 72, 0.32);
+  border-radius: calc(var(--radius-panel) - 4px);
+}
+
 .stone-card {
   border: 1px solid color-mix(in srgb, var(--border-stone) 82%, var(--control));
   border-radius: var(--radius-card);
@@ -268,10 +303,12 @@ button:disabled {
 .dark .stone-panel,
 .dark .stone-card {
   background:
-    linear-gradient(145deg, var(--surface-raised), var(--surface)),
-    radial-gradient(circle at 50% 0%, rgba(70, 183, 138, 0.1), transparent 42%),
+    linear-gradient(145deg, rgba(4, 58, 52, 0.92), rgba(1, 36, 33, 0.92)),
+    radial-gradient(circle at 50% 0%, rgba(141, 204, 132, 0.08), transparent 46%),
     url("/marble.png");
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(246, 231, 191, 0.08);
+  border-color: var(--border-soft);
+  background-blend-mode: normal, normal, multiply;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.54), inset 0 1px 0 rgba(243, 225, 189, 0.08);
 }
 
 .dark .relief-avatar {
@@ -308,6 +345,18 @@ button:disabled {
     linear-gradient(var(--accent-bronze), var(--accent-bronze)) right 11px bottom 11px / 1px 22px no-repeat;
 }
 
+.dark .architectural-corners {
+  background:
+    linear-gradient(var(--accent-bronze), var(--accent-bronze)) left 7px top 7px / 16px 1px no-repeat,
+    linear-gradient(var(--accent-bronze), var(--accent-bronze)) left 7px top 7px / 1px 16px no-repeat,
+    linear-gradient(var(--accent-bronze), var(--accent-bronze)) right 7px top 7px / 16px 1px no-repeat,
+    linear-gradient(var(--accent-bronze), var(--accent-bronze)) right 7px top 7px / 1px 16px no-repeat,
+    linear-gradient(var(--accent-bronze), var(--accent-bronze)) left 7px bottom 7px / 16px 1px no-repeat,
+    linear-gradient(var(--accent-bronze), var(--accent-bronze)) left 7px bottom 7px / 1px 16px no-repeat,
+    linear-gradient(var(--accent-bronze), var(--accent-bronze)) right 7px bottom 7px / 16px 1px no-repeat,
+    linear-gradient(var(--accent-bronze), var(--accent-bronze)) right 7px bottom 7px / 1px 16px no-repeat;
+}
+
 .relief-avatar {
   filter: sepia(0.2) saturate(0.75) contrast(0.96);
 }
@@ -342,33 +391,16 @@ button:disabled {
   }
 }
 
-.dark body {
-  background:
-    radial-gradient(circle at 18% 20%, rgba(51, 64, 55, 0.4), transparent 30%),
-    radial-gradient(circle at 76% 18%, rgba(211, 177, 124, 0.08), transparent 34%),
-    linear-gradient(135deg, #101410 0%, #151b17 48%, #080b09 100%);
-}
-
-.dark .stone-panel {
-  background:
-    linear-gradient(145deg, var(--surface-raised), var(--surface)),
-    url("/marble.png");
-  background-size: cover;
-  background-position: center;
-  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.4);
-}
-
-.dark .stone-card {
-  background:
-    linear-gradient(145deg, var(--surface-raised), var(--surface)),
-    url("/marble.png");
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-
 .dark .carved-rule::after {
-  background: #121312;
+  background: #031f1d;
 }
 
 .dark .relief-avatar {
-  filter: sepia(0.1) saturate(0.5) contrast(1.1) brightness(0.85);
+  filter: sepia(0.42) saturate(0.78) contrast(1.18) brightness(0.78);
+}
+
+nextjs-portal,
+[data-nextjs-toast],
+.nextjs-toast {
+  display: none !important;
 }

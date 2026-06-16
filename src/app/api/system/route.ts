@@ -15,6 +15,6 @@ export async function GET() {
   return NextResponse.json({
     cpu: cpuPercent,
     ram: ramPercent,
-    aether: Math.round(Math.random() * 20 + 70) // Still simulated for 'Aether'
+    uptimeSeconds: Math.round(os.uptime()),
   });
 }

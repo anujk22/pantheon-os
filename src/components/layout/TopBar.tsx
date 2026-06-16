@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { ChevronDown, Landmark, Search, Moon, Sun } from "lucide-react";
 
 type UserProfile = {
@@ -32,25 +33,25 @@ export function TopBar() {
   };
 
   return (
-    <header className="relative h-[126px] shrink-0 px-2 pt-3 min-[900px]:h-[112px]">
-      <div className="absolute left-4 top-3 text-[var(--accent-bronze)] min-[900px]:left-[calc((100%_-_365px)/2)] min-[900px]:-translate-x-1/2">
-        <Landmark className="h-6 w-6 stroke-[1.4]" />
+    <header className="relative h-[116px] shrink-0 px-2 pt-3 min-[900px]:h-[94px]">
+      <div className="absolute left-4 top-2 text-[var(--accent-bronze)] min-[900px]:left-[calc((100%_-_360px)/2)] min-[900px]:-translate-x-1/2">
+        <Landmark className="h-5 w-5 stroke-[1.35]" />
       </div>
 
-      <div className="absolute left-0 right-0 top-12 text-center min-[900px]:right-[365px] min-[900px]:top-10">
-        <h2 className="font-serif text-[2rem] font-medium leading-none tracking-[0.028em] text-[var(--text-primary)] min-[900px]:text-[2.28rem] min-[1500px]:text-[2.58rem]">
+      <div className="absolute left-0 right-0 top-10 text-center min-[900px]:right-[360px] min-[900px]:top-8">
+        <h2 className="font-serif text-[1.9rem] font-medium leading-none tracking-[0.12em] text-[var(--text-primary)] min-[900px]:text-[2rem] min-[1500px]:text-[2.28rem]">
           COMMAND LAYER
         </h2>
-        <div className="mt-4 flex items-center justify-center gap-4">
-          <div className="carved-rule hidden w-24 min-[640px]:block min-[1500px]:w-32" />
-          <p className="max-w-[21rem] px-4 font-serif text-[0.8rem] tracking-[0.1em] text-[var(--text-primary)] min-[900px]:max-w-none min-[900px]:px-0 min-[900px]:text-[1rem] min-[1500px]:text-[1.08rem]">
+        <div className="mt-2 flex items-center justify-center gap-4">
+          <div className="carved-rule hidden w-24 min-[640px]:block min-[1500px]:w-36" />
+          <p className="max-w-[21rem] px-4 font-serif text-[0.72rem] uppercase tracking-[0.26em] text-[var(--text-muted)] min-[900px]:max-w-none min-[900px]:px-0 min-[1500px]:text-[0.82rem]">
             Direct your agents. Manifest results.
           </p>
-          <div className="carved-rule hidden w-24 min-[640px]:block min-[1500px]:w-32" />
+          <div className="carved-rule hidden w-24 min-[640px]:block min-[1500px]:w-36" />
         </div>
       </div>
 
-      <div className="absolute right-0 top-3 flex items-center gap-2 min-[900px]:top-5 min-[900px]:gap-3">
+      <div className="absolute right-0 top-3 flex items-center gap-2 min-[900px]:top-4 min-[900px]:gap-3">
         <label className="relative hidden h-10 w-[230px] items-center rounded-[7px] border border-[var(--border-soft)] bg-[var(--control-muted)] px-3 shadow-[inset_0_1px_2px_rgba(72,56,38,0.05)] transition focus-within:border-[var(--accent-green)] min-[1220px]:flex min-[1500px]:w-[260px]">
           <Search className="mr-2 h-4 w-4 shrink-0 text-[var(--text-primary)]" />
           <input
@@ -77,7 +78,14 @@ export function TopBar() {
         <button type="button" className="hidden h-[52px] items-center gap-3 rounded-full px-1.5 pr-2 text-left transition hover:bg-[var(--surface-hover)] min-[520px]:flex">
           {user?.image ? (
             <span className="relative h-12 w-12 overflow-hidden rounded-full border border-[var(--border-soft)] bg-[var(--control-muted)] shadow-[0_5px_14px_rgba(72,56,38,0.12)]">
-              <img src={user.image} alt={user.name || "User profile"} className="object-cover w-full h-full" />
+              <Image
+                src={user.image}
+                alt={user.name || "User profile"}
+                fill
+                sizes="48px"
+                unoptimized
+                className="object-cover"
+              />
             </span>
           ) : (
             <span className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-[rgba(174,144,100,0.42)] bg-[var(--accent-green)] text-white font-serif text-lg shadow-[0_5px_14px_rgba(72,56,38,0.12)]">

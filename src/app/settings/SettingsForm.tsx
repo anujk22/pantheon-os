@@ -47,14 +47,15 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
   };
 
   return (
-    <div className="h-full w-full flex flex-col space-y-6">
-      <div className="stone-panel architectural-corners flex flex-col p-8">
+    <div className="h-full min-h-0 w-full">
+      <div className="stone-panel architectural-corners flex h-full min-h-0 flex-col p-6 min-[1500px]:p-8">
         <div className="flex items-center space-x-3 mb-6 border-b border-[rgba(174,144,100,0.18)] pb-4">
           <Settings className="w-6 h-6 text-[var(--accent-green)]" />
           <h1 className="text-2xl font-serif text-[var(--text-primary)] tracking-[0.08em]">SYSTEM SETTINGS</h1>
         </div>
 
-        <div className="space-y-8 max-w-2xl overflow-y-auto custom-scrollbar pr-4">
+        <div className="min-h-0 flex-1 overflow-y-auto custom-scrollbar pr-4">
+          <div className="max-w-2xl space-y-8 pb-8">
           
           <form onSubmit={handleSave} className="soft-surface space-y-6 rounded-[8px] p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-4 border-b border-[rgba(174,144,100,0.18)] pb-2">
@@ -277,6 +278,7 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
                 </>
               )}
             </button>
+          </div>
           </div>
         </div>
       </div>

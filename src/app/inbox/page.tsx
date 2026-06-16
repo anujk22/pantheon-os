@@ -43,7 +43,7 @@ export default async function CommandInboxPage() {
   return (
     <div className="stone-panel architectural-corners flex h-full w-full flex-col overflow-hidden">
       <header className="relative z-10 border-b border-[var(--border-soft)] bg-[var(--surface-soft)] px-7 py-5">
-        <div className="flex items-start justify-between gap-6">
+        <div className="flex flex-col items-start justify-between gap-4 min-[720px]:flex-row min-[720px]:gap-6">
           <div>
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--border-soft)] bg-[var(--accent-green)] text-white">
@@ -60,7 +60,7 @@ export default async function CommandInboxPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 text-center min-w-[260px]">
+          <div className="grid w-full grid-cols-3 gap-2 text-center min-[720px]:w-auto min-[720px]:min-w-[260px]">
             <Metric label="Untriaged" value={untriagedCount} />
             <Metric label="Triaged" value={triagedCount} />
             <Metric label="Archived" value={archivedCount} />
@@ -103,7 +103,7 @@ export default async function CommandInboxPage() {
                 key={item.id}
                 className="stone-card overflow-hidden"
               >
-                <div className="p-5 flex gap-5">
+                <div className="flex flex-col gap-5 p-5 min-[900px]:flex-row">
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-2">
                       <Badge>{item.sourceType}</Badge>
@@ -132,7 +132,7 @@ export default async function CommandInboxPage() {
                     ) : null}
                   </div>
 
-                  <div className="w-[360px] shrink-0 border-l border-[var(--border-soft)] pl-5">
+                  <div className="w-full shrink-0 border-t border-[var(--border-soft)] pt-5 min-[900px]:w-[360px] min-[900px]:border-l min-[900px]:border-t-0 min-[900px]:pl-5 min-[900px]:pt-0">
                     <div className="grid grid-cols-2 gap-2">
                       <TriageButton
                         itemId={item.id}

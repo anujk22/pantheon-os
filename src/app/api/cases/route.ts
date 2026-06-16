@@ -1,6 +1,24 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { createCaseRecord } from "@/lib/cases";
+import { prisma } from "@/lib/prisma";
+
+export async function GET() {
+  const cases = await prisma.case.findMany({
+    orderBy: { updatedAt: "desc" },
+    take: 100,
+    select: {
+      id: true,
+      title: true,
+      status: true,
+      _count: {
+        select: { tasks: true, artifacts: true, memories: true },
+      },
+    },
+  });
+
+  return NextResponse.json(cases);
+}
 
 export async function POST(req: Request) {
   try {

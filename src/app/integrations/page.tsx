@@ -98,10 +98,13 @@ const plannedConnectors: Connector[] = [
 ];
 
 export default async function IntegrationsPage() {
-  const user = await prisma.user.findFirst({
-    where: { email: "local-admin@pantheon.local" },
-    select: { llmProvider: true, llmBaseUrl: true, llmModel: true },
-  });
+  const [user, eventCount] = await Promise.all([
+    prisma.user.findFirst({
+      where: { email: "local-admin@pantheon.local" },
+      select: { llmProvider: true, llmBaseUrl: true, llmModel: true },
+    }),
+    prisma.event.count(),
+  ]);
 
   const localConnectors: Connector[] = [
     {
@@ -137,6 +140,14 @@ export default async function IntegrationsPage() {
       value: "Keeps memory reviewable and prevents accidental permanent context.",
       nextStep: "Let connectors write only into Inbox until reviewed.",
       icon: Inbox,
+    },
+    {
+      name: "Local Calendar Store",
+      description: "Stores dated events for the right rail and Morning Brief without pretending an external calendar is connected.",
+      status: "working",
+      value: `${eventCount} local event${eventCount === 1 ? "" : "s"} saved.`,
+      nextStep: "Import Google Calendar or ICS events into this table only after a connector is configured.",
+      icon: CalendarDays,
     },
   ];
 

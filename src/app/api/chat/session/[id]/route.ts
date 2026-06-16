@@ -71,10 +71,30 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await req.json();
+    const data: { folder?: string | null; caseId?: string | null } = {};
+
+    if ("folder" in body) data.folder = body.folder;
+    if ("caseId" in body) data.caseId = body.caseId || null;
+
     const session = await prisma.chatSession.update({
       where: { id },
-      data: { folder: body.folder },
+      data,
     });
+
+    if ("caseId" in body) {
+      await prisma.chatLedgerEntry.create({
+        data: {
+          sessionId: id,
+          kind: "case_attached",
+          title: body.caseId ? "Attached case context" : "Cleared case context",
+          detail: body.caseId
+            ? "Future turns can use this case as their local work container."
+            : "Future turns will use global chat context unless another case is attached.",
+          payloadJson: JSON.stringify({ caseId: body.caseId || null }),
+        },
+      });
+    }
+
     return NextResponse.json(session);
   } catch (error) {
     console.error("Failed to update session:", error);

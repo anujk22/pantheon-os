@@ -164,6 +164,9 @@ function ActionCard({ action }: { action: AgentActionRecord }) {
               {action.sourceType}
               {action.sourceRef ? `:${action.sourceRef.slice(0, 8)}` : ""}
             </span>
+            <span className="rounded-[5px] border border-[var(--border-soft)] bg-[var(--control-muted)] px-2 py-1 text-xs font-semibold capitalize text-[var(--accent-bronze)]">
+              {action.createdBy}
+            </span>
           </div>
           <h2 className="font-serif text-xl font-semibold text-[var(--text-primary)]">
             {action.title}

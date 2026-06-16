@@ -9,12 +9,17 @@ export type AgentActionPayload = {
   caseId?: string | null;
   inboxItemId?: string;
   sourceChatSessionId?: string;
+  taskCandidates?: Array<{ title: string; description?: string }>;
+  artifactCandidates?: Array<{ title: string; type?: string; content: string }>;
+  memoryCandidates?: Array<{ content: string; memoryType?: string }>;
+  suggestedAgents?: string[];
 };
 
 type ProposedAction = {
   title: string;
   description: string;
   kind: string;
+  createdBy: string;
   sourceType: string;
   sourceRef?: string;
   payload: AgentActionPayload;
@@ -39,6 +44,7 @@ export async function proposeInboxActions(limit = 30) {
         title: `Create task: ${item.title}`,
         description: "Athena found task-shaped language in an untriaged inbox item.",
         kind: "create_task",
+        createdBy: "artemis",
         sourceType: "inbox",
         sourceRef: item.id,
         payload: {
@@ -55,6 +61,7 @@ export async function proposeInboxActions(limit = 30) {
         title: `Save artifact: ${item.title}`,
         description: "Athena found durable reference material in an untriaged inbox item.",
         kind: "save_artifact",
+        createdBy: "apollo",
         sourceType: "inbox",
         sourceRef: item.id,
         payload: {
@@ -72,6 +79,7 @@ export async function proposeInboxActions(limit = 30) {
         title: `Review memory: ${item.title}`,
         description: "Athena found a preference or durable fact that should be reviewed before saving.",
         kind: "save_memory",
+        createdBy: "athena",
         sourceType: "inbox",
         sourceRef: item.id,
         payload: {
@@ -88,6 +96,7 @@ export async function proposeInboxActions(limit = 30) {
         title: `Create case: ${item.title}`,
         description: "Athena found project-shaped context that can become a case workspace.",
         kind: "create_case",
+        createdBy: "hermes",
         sourceType: "inbox",
         sourceRef: item.id,
         payload: {
@@ -102,6 +111,7 @@ export async function proposeInboxActions(limit = 30) {
       title: `Archive low-signal capture: ${item.title}`,
       description: "Athena did not find a strong task, artifact, memory, or case signal.",
       kind: "archive_inbox",
+      createdBy: "athena",
       sourceType: "inbox",
       sourceRef: item.id,
       payload: {
@@ -134,6 +144,7 @@ export async function proposeChatReviewActions(limit = 10) {
       title: `Summarize chat: ${session.title}`,
       description: "Athena found an unsummarized conversation with enough context to review.",
       kind: "save_artifact",
+      createdBy: "apollo",
       sourceType: "chat",
       sourceRef: session.id,
       payload: {
@@ -173,6 +184,7 @@ async function createMissingActions(proposals: ProposedAction[]) {
         sourceType: proposal.sourceType,
         sourceRef: proposal.sourceRef,
         payloadJson: JSON.stringify(proposal.payload),
+        createdBy: proposal.createdBy,
       },
     });
 
@@ -236,7 +248,43 @@ export async function executeAgentAction(id: string) {
           description: payload.body || action.description,
         },
       });
-      result = { caseId: caseItem.id };
+      const tasks = payload.taskCandidates?.length
+        ? await prisma.task.createMany({
+            data: payload.taskCandidates.map((task) => ({
+              title: task.title,
+              description: task.description,
+              caseId: caseItem.id,
+            })),
+          })
+        : null;
+      const artifacts = payload.artifactCandidates?.length
+        ? await prisma.artifact.createMany({
+            data: payload.artifactCandidates.map((artifact) => ({
+              title: artifact.title,
+              type: artifact.type || "text",
+              content: artifact.content,
+              caseId: caseItem.id,
+            })),
+          })
+        : null;
+      const memories = payload.memoryCandidates?.length
+        ? await prisma.memory.createMany({
+            data: payload.memoryCandidates.map((memory) => ({
+              content: memory.content,
+              memoryType: memory.memoryType || "note",
+              sourceType: action.sourceType,
+              sourceRef: action.sourceRef,
+              caseId: caseItem.id,
+            })),
+          })
+        : null;
+      result = {
+        caseId: caseItem.id,
+        tasksCreated: tasks?.count || 0,
+        artifactsCreated: artifacts?.count || 0,
+        memoriesCreated: memories?.count || 0,
+        suggestedAgents: payload.suggestedAgents || [],
+      };
       if (payload.inboxItemId) {
         await prisma.inboxItem.update({
           where: { id: payload.inboxItemId },

@@ -19,6 +19,9 @@ model User {
   emailVerified DateTime?
   image         String?
   systemPrompt  String?
+  responseStyle String?   @default("considerate")
+  memoryMode    String?   @default("summaries")
+  themeMode     String?   @default("system")
   llmProvider   String?   @default("lmstudio")
   llmBaseUrl    String?
   llmApiKey     String?

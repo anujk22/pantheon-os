@@ -49,29 +49,29 @@
 }
 
 .dark {
-  --bg-limestone: #0f1411;
-  --bg-marble: #161b17;
-  --surface: rgba(22, 28, 24, 0.86);
-  --surface-raised: rgba(29, 36, 31, 0.96);
-  --surface-soft: rgba(31, 39, 34, 0.7);
-  --surface-hover: rgba(58, 72, 61, 0.34);
-  --control: #151b17;
-  --control-muted: rgba(31, 39, 34, 0.82);
-  --control-subtle: rgba(26, 33, 28, 0.7);
-  --text-primary: #f2eee5;
-  --text-muted: #b9b0a3;
-  --text-subtle: #958b7f;
-  --accent-bronze: #d3b17c;
-  --accent-sage: #9cad96;
-  --accent-green: #85b891;
-  --accent-green-hover: #6aa877;
-  --border-stone: #4b463d;
-  --border-soft: rgba(211, 177, 124, 0.22);
-  --danger-bg: rgba(73, 32, 28, 0.48);
-  --danger-border: rgba(232, 128, 112, 0.32);
-  --danger-text: #f0b3a8;
-  --success-bg: rgba(133, 184, 145, 0.14);
-  --success-text: #bfe5c6;
+  --bg-limestone: #021f1b;
+  --bg-marble: #062c26;
+  --surface: rgba(3, 48, 41, 0.84);
+  --surface-raised: rgba(4, 57, 49, 0.94);
+  --surface-soft: rgba(5, 66, 56, 0.62);
+  --surface-hover: rgba(15, 124, 91, 0.24);
+  --control: #052d27;
+  --control-muted: rgba(4, 41, 35, 0.86);
+  --control-subtle: rgba(9, 70, 60, 0.62);
+  --text-primary: #f6e7bf;
+  --text-muted: #d7c7a2;
+  --text-subtle: #aa9b7d;
+  --accent-bronze: #d9b66f;
+  --accent-sage: #55c69a;
+  --accent-green: #45d08e;
+  --accent-green-hover: #2fa972;
+  --border-stone: #9b7a3f;
+  --border-soft: rgba(217, 182, 111, 0.34);
+  --danger-bg: rgba(91, 36, 27, 0.5);
+  --danger-border: rgba(255, 111, 78, 0.38);
+  --danger-text: #ff8e68;
+  --success-bg: rgba(69, 208, 142, 0.16);
+  --success-text: #a8f0c8;
   --overlay: rgba(0, 0, 0, 0.58);
   --shadow-soft: 0 16px 45px rgba(0, 0, 0, 0.42);
   --shadow-raised: 0 20px 55px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.07);
@@ -91,6 +91,13 @@ body {
     linear-gradient(135deg, #f8f4ec 0%, #eee7db 48%, #faf7f1 100%);
   color: var(--foreground);
   font-family: var(--font-sans);
+}
+
+.dark body {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(8, 104, 84, 0.34), transparent 31%),
+    radial-gradient(circle at 82% 9%, rgba(217, 182, 111, 0.12), transparent 28%),
+    linear-gradient(135deg, #021a17 0%, #042e28 48%, #021f1b 100%);
 }
 
 button,
@@ -148,6 +155,76 @@ button:disabled {
   color: var(--success-text);
 }
 
+.chat-bubble {
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 0.97rem;
+  line-height: 1.65;
+  box-shadow: 0 10px 24px rgba(72, 56, 38, 0.08);
+}
+
+.chat-bubble-athena {
+  border: 1px solid var(--border-soft);
+  background: color-mix(in srgb, var(--surface-raised) 86%, transparent);
+  color: var(--text-primary);
+}
+
+.chat-bubble-user {
+  border: 1px solid color-mix(in srgb, var(--accent-green) 28%, transparent);
+  background: color-mix(in srgb, var(--accent-green) 12%, var(--control));
+  color: var(--text-primary);
+}
+
+.chat-markdown > * + * {
+  margin-top: 0.85rem;
+}
+
+.chat-markdown h4 {
+  font-family: var(--font-cinzel);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--accent-bronze);
+}
+
+.chat-markdown ul,
+.chat-markdown ol {
+  padding-left: 1.25rem;
+}
+
+.chat-markdown li + li {
+  margin-top: 0.35rem;
+}
+
+.chat-markdown pre {
+  overflow-x: auto;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  background: var(--control-muted);
+  padding: 0.75rem;
+  color: var(--text-muted);
+  white-space: pre;
+}
+
+.chat-markdown strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.chat-markdown em {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.dark .theme-icon-moon {
+  display: none;
+}
+
+.dark .theme-icon-sun {
+  display: block;
+}
+
 .pantheon-marble {
   background:
     linear-gradient(90deg, color-mix(in srgb, var(--control) 62%, transparent), color-mix(in srgb, var(--control) 18%, transparent)),
@@ -186,6 +263,19 @@ button:disabled {
     url("/marble.png");
   background-size: cover;
   box-shadow: 0 10px 24px rgba(72, 56, 38, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.86);
+}
+
+.dark .stone-panel,
+.dark .stone-card {
+  background:
+    linear-gradient(145deg, var(--surface-raised), var(--surface)),
+    radial-gradient(circle at 50% 0%, rgba(70, 183, 138, 0.1), transparent 42%),
+    url("/marble.png");
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(246, 231, 191, 0.08);
+}
+
+.dark .relief-avatar {
+  filter: sepia(0.55) saturate(1.1) contrast(1.02);
 }
 
 .carved-rule {

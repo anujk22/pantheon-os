@@ -13,15 +13,51 @@ import {
   FileText,
   Grid2X2,
   Loader2,
+  MessageSquare,
   Paperclip,
+  PanelLeftClose,
+  PanelLeftOpen,
+  PlusCircle,
   Send,
   Sparkles,
+  Trash2,
   X,
 } from "lucide-react";
 
 const chatTransport = new DefaultChatTransport({
   api: "/api/chat",
 });
+
+type ChatSessionSummary = {
+  id: string;
+  title: string;
+  folder: string | null;
+  summary: string | null;
+  updatedAt: string;
+};
+
+const composerTools = [
+  {
+    icon: Grid2X2,
+    label: "Context",
+    detail: "Attach saved context packs. Not connected yet.",
+  },
+  {
+    icon: Sparkles,
+    label: "Refine",
+    detail: "Ask Athena to clarify or tighten your prompt. Not connected yet.",
+  },
+  {
+    icon: FileText,
+    label: "Artifact",
+    detail: "Save useful output as an artifact. Not connected yet.",
+  },
+  {
+    icon: CalendarDays,
+    label: "Schedule",
+    detail: "Draft calendar blocks from this conversation. Not connected yet.",
+  },
+];
 
 function Avatar({ role }: { role: "user" | "assistant" }) {
   if (role === "user") {
@@ -111,6 +147,89 @@ function ThinkingIndicator() {
   );
 }
 
+function InlineMarkdown({ text }: { text: string }) {
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+
+  return (
+    <>
+      {parts.map((part, index) => {
+        if (part.startsWith("**") && part.endsWith("**")) {
+          return <strong key={index}>{part.slice(2, -2)}</strong>;
+        }
+        if (part.startsWith("*") && part.endsWith("*")) {
+          return <em key={index}>{part.slice(1, -1)}</em>;
+        }
+        return <React.Fragment key={index}>{part}</React.Fragment>;
+      })}
+    </>
+  );
+}
+
+function MarkdownMessage({ text }: { text: string }) {
+  const blocks = text
+    .replace(/\r\n/g, "\n")
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean);
+
+  if (blocks.length === 0) return null;
+
+  return (
+    <div className="chat-markdown">
+      {blocks.map((block, index) => {
+        const lines = block.split("\n").map((line) => line.trim()).filter(Boolean);
+        const first = lines[0] ?? "";
+
+        if (/^#{1,3}\s+/.test(first)) {
+          return (
+            <h4 key={index}>
+              <InlineMarkdown text={first.replace(/^#{1,3}\s+/, "")} />
+            </h4>
+          );
+        }
+
+        if (lines.every((line) => /^[-*]\s+/.test(line))) {
+          return (
+            <ul key={index}>
+              {lines.map((line, itemIndex) => (
+                <li key={itemIndex}>
+                  <InlineMarkdown text={line.replace(/^[-*]\s+/, "")} />
+                </li>
+              ))}
+            </ul>
+          );
+        }
+
+        if (lines.every((line) => /^\d+\.\s+/.test(line))) {
+          return (
+            <ol key={index}>
+              {lines.map((line, itemIndex) => (
+                <li key={itemIndex}>
+                  <InlineMarkdown text={line.replace(/^\d+\.\s+/, "")} />
+                </li>
+              ))}
+            </ol>
+          );
+        }
+
+        if (lines.length > 1 && lines.every((line) => line.includes("|"))) {
+          return (
+            <pre key={index}>
+              <code>{lines.join("\n")}</code>
+            </pre>
+          );
+        }
+
+        return (
+          <p key={index}>
+            <InlineMarkdown text={lines.join(" ")} />
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 function LiveMessages({
   messages,
   isLoading,
@@ -161,8 +280,12 @@ function LiveMessages({
                 </div>
               )}
 
-              <div className="max-w-[820px] whitespace-pre-wrap text-[1rem] leading-relaxed">
-                {text || (!files?.length && (isUser ? "" : "No text returned."))}
+              <div className={`chat-bubble max-w-[820px] ${isUser ? "chat-bubble-user" : "chat-bubble-athena"}`}>
+                {text ? (
+                  <MarkdownMessage text={text} />
+                ) : (
+                  !files?.length && (isUser ? "" : "No text returned.")
+                )}
               </div>
             </div>
           </div>
@@ -198,9 +321,147 @@ function ChatError({
   );
 }
 
+function ChatHistoryDrawer({
+  isOpen,
+  activeChatId,
+  onToggle,
+}: {
+  isOpen: boolean;
+  activeChatId: string | null;
+  onToggle: () => void;
+}) {
+  const router = useRouter();
+  const [sessions, setSessions] = useState<ChatSessionSummary[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const loadSessions = async () => {
+    setIsLoading(true);
+    const response = await fetch("/api/chat/history");
+    if (response.ok) {
+      setSessions(await response.json());
+    }
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      loadSessions();
+    }
+  }, [isOpen]);
+
+  const deleteSession = async (sessionId: string) => {
+    await fetch(`/api/chat/session/${sessionId}`, { method: "DELETE" });
+    setSessions((current) => current.filter((session) => session.id !== sessionId));
+    if (activeChatId === sessionId) {
+      router.push("/");
+    }
+  };
+
+  return (
+    <aside
+      className={`relative z-20 flex min-h-0 shrink-0 flex-col border-r border-[var(--border-soft)] bg-[var(--control-muted)] transition-[width] duration-200 ${
+        isOpen ? "w-[280px]" : "w-12"
+      }`}
+    >
+      <div className="flex h-12 items-center justify-between border-b border-[var(--border-soft)] px-2">
+        {isOpen ? (
+          <span className="px-2 text-xs font-semibold tracking-[0.14em] text-[var(--accent-bronze)]">
+            CHATS
+          </span>
+        ) : null}
+        <button
+          type="button"
+          onClick={onToggle}
+          className="grid h-8 w-8 place-items-center rounded-[6px] text-[var(--text-muted)] transition hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
+          title={isOpen ? "Collapse chat history" : "Open chat history"}
+          aria-label={isOpen ? "Collapse chat history" : "Open chat history"}
+        >
+          {isOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
+        </button>
+      </div>
+
+      {isOpen ? (
+        <>
+          <div className="border-b border-[var(--border-soft)] p-3">
+            <button
+              type="button"
+              onClick={() => router.push("/")}
+              className="flex w-full items-center justify-center gap-2 rounded-[8px] border border-[var(--accent-green)] bg-[var(--success-bg)] px-3 py-2 text-sm font-semibold text-[var(--success-text)] transition hover:bg-[var(--surface-hover)]"
+            >
+              <PlusCircle className="h-4 w-4" />
+              New chat
+            </button>
+          </div>
+
+          <div className="min-h-0 flex-1 overflow-y-auto p-2 custom-scrollbar">
+            {isLoading ? (
+              <div className="flex h-24 items-center justify-center">
+                <Loader2 className="h-5 w-5 animate-spin text-[var(--accent-green)]" />
+              </div>
+            ) : sessions.length === 0 ? (
+              <p className="px-3 py-4 text-sm leading-relaxed text-[var(--text-muted)]">
+                Past conversations will appear here after Athena replies.
+              </p>
+            ) : (
+              <div className="space-y-1">
+                {sessions.map((session) => (
+                  <div
+                    key={session.id}
+                    className={`group flex items-center gap-1 rounded-[8px] border px-2 py-2 transition ${
+                      activeChatId === session.id
+                        ? "border-[var(--accent-green)] bg-[var(--success-bg)]"
+                        : "border-transparent hover:border-[var(--border-soft)] hover:bg-[var(--surface-hover)]"
+                    }`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => router.push(`/?chat=${session.id}`)}
+                      className="min-w-0 flex-1 text-left"
+                      title={session.summary || session.title}
+                    >
+                      <span className="block truncate text-sm font-medium text-[var(--text-primary)]">
+                        {session.title}
+                      </span>
+                      <span className="mt-0.5 block truncate text-xs text-[var(--text-muted)]">
+                        {session.summary || "No summary yet"}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => deleteSession(session.id)}
+                      className="grid h-7 w-7 shrink-0 place-items-center rounded-[6px] text-[var(--text-subtle)] opacity-0 transition hover:bg-[var(--danger-bg)] hover:text-[var(--danger-text)] group-hover:opacity-100"
+                      title="Delete conversation"
+                      aria-label="Delete conversation"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </>
+      ) : (
+        <div className="flex flex-1 flex-col items-center gap-2 pt-3">
+          <button
+            type="button"
+            onClick={() => router.push("/")}
+            className="grid h-8 w-8 place-items-center rounded-[6px] text-[var(--text-muted)] transition hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
+            title="New chat"
+            aria-label="New chat"
+          >
+            <MessageSquare className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+    </aside>
+  );
+}
+
 function ChatWindow({ initialMessages, chatId }: { initialMessages: any[]; chatId: string | null }) {
   const router = useRouter();
   const [sessionChatId] = useState(() => chatId || `new-chat-${Date.now()}`);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   
   const { messages, sendMessage, status, error, regenerate, clearError } =
     useChat({
@@ -269,7 +530,13 @@ function ChatWindow({ initialMessages, chatId }: { initialMessages: any[]; chatI
   };
 
   return (
-    <section className="stone-panel architectural-corners flex h-full min-h-0 flex-col overflow-hidden">
+    <section className="stone-panel architectural-corners flex h-full min-h-0 overflow-hidden">
+      <ChatHistoryDrawer
+        isOpen={isHistoryOpen}
+        activeChatId={chatId}
+        onToggle={() => setIsHistoryOpen((current) => !current)}
+      />
+      <div className="flex min-w-0 flex-1 flex-col">
       <div className="relative z-10 flex-1 overflow-y-auto px-4 pb-5 pt-5 custom-scrollbar min-[720px]:px-6 min-[720px]:pt-7 min-[1500px]:px-8 flex flex-col">
         {hasLiveMessages ? (
           <>
@@ -320,10 +587,10 @@ function ChatWindow({ initialMessages, chatId }: { initialMessages: any[]; chatI
           />
 
           <div className="flex items-center justify-between gap-3">
-            <div className="flex min-w-0 items-center gap-2 text-[var(--text-primary)] min-[720px]:gap-4">
+            <div className="flex min-w-0 flex-wrap items-center gap-2 text-[var(--text-primary)]">
               <label
                 title="Attach file"
-                className="grid h-8 w-8 cursor-pointer place-items-center rounded-[6px] text-[var(--text-muted)] transition hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
+                className="flex h-8 cursor-pointer items-center gap-1.5 rounded-[6px] px-2 text-[var(--text-muted)] transition hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
               >
                 <input
                   type="file"
@@ -334,18 +601,20 @@ function ChatWindow({ initialMessages, chatId }: { initialMessages: any[]; chatI
                   disabled={status !== "ready"}
                 />
                 <Paperclip className="h-5 w-5 stroke-[1.7]" />
+                <span className="hidden text-xs font-medium min-[1100px]:inline">Attach</span>
               </label>
 
-              {[Grid2X2, Sparkles, FileText, CalendarDays].map(
-                (Icon, index) => (
+              {composerTools.map(
+                ({ icon: Icon, label, detail }) => (
                   <button
-                    key={index}
+                    key={label}
                     type="button"
                     disabled
-                    title="This action is not connected yet."
-                    className="grid h-8 w-8 place-items-center rounded-[6px] text-[var(--text-muted)] opacity-55"
+                    title={detail}
+                    className="flex h-8 items-center gap-1.5 rounded-[6px] px-2 text-[var(--text-muted)] opacity-60"
                   >
                     <Icon className="h-5 w-5 stroke-[1.7]" />
+                    <span className="hidden text-xs font-medium min-[1100px]:inline">{label}</span>
                   </button>
                 )
               )}
@@ -355,12 +624,12 @@ function ChatWindow({ initialMessages, chatId }: { initialMessages: any[]; chatI
               <button
                 type="submit"
                 disabled={status !== "ready"}
-                className="flex h-11 w-11 items-center justify-center gap-3 rounded-l-[7px] border border-[var(--border-soft)] bg-[var(--control-muted)] text-sm font-bold tracking-[0.22em] text-[var(--accent-green)] shadow-[inset_0_1px_0_rgba(255,255,255,0.14)] transition hover:border-[var(--accent-green)] hover:bg-[var(--control)] disabled:opacity-50 min-[720px]:w-auto min-[720px]:justify-start min-[720px]:px-6"
+                className="flex h-11 w-11 items-center justify-center gap-3 rounded-[7px] border border-[var(--accent-bronze)] bg-[var(--success-bg)] text-sm font-bold tracking-[0.18em] text-[var(--text-primary)] shadow-[inset_0_1px_0_rgba(246,231,191,0.16),0_8px_22px_rgba(0,0,0,0.16)] transition hover:border-[var(--accent-green)] hover:bg-[var(--surface-hover)] disabled:opacity-50 min-[720px]:w-auto min-[720px]:justify-start min-[720px]:px-6"
               >
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <Send className="h-4 w-4 fill-[var(--accent-green)]" />
+                  <Send className="h-4 w-4 text-[var(--accent-green)]" />
                 )}
                 <span className="hidden min-[720px]:inline">SEND</span>
               </button>
@@ -368,7 +637,7 @@ function ChatWindow({ initialMessages, chatId }: { initialMessages: any[]; chatI
                 type="button"
                 disabled
                 title="Send options are not connected yet."
-                className="grid h-11 w-[52px] place-items-center rounded-r-[7px] border-y border-r border-[var(--accent-green)] bg-[var(--accent-green)] text-white opacity-80"
+                className="ml-2 grid h-11 w-11 place-items-center rounded-[7px] border border-[var(--border-soft)] bg-[var(--control-muted)] text-[var(--text-muted)] opacity-70"
               >
                 <ChevronDown className="h-4 w-4" />
               </button>
@@ -379,6 +648,7 @@ function ChatWindow({ initialMessages, chatId }: { initialMessages: any[]; chatI
         <p className="mt-2 text-center text-xs text-[var(--text-muted)]">
           Athena only responds when the configured LLM endpoint is reachable.
         </p>
+      </div>
       </div>
     </section>
   );

@@ -1,55 +1,66 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, Plus, X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 
 export default function CreateCaseButton() {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
   const [isOpen, setIsOpen] = useState(false);
-  const [message, setMessage] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const router = useRouter();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setMessage("");
+  const closeDialog = () => {
+    setError(null);
+    setIsOpen(false);
+  };
 
-    const formData = new FormData(event.currentTarget);
-    const title = String(formData.get("title") ?? "").trim();
-    const description = String(formData.get("description") ?? "").trim();
+  const createCase = async (formData: FormData) => {
+    setError(null);
+    setIsSubmitting(true);
+    const response = await fetch("/api/cases", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: formData.get("title"),
+        description: formData.get("description"),
+      }),
+    });
 
-    if (title.length < 2) {
-      setMessage("Add a case title with at least 2 characters.");
+    if (!response.ok) {
+      const body = (await response.json().catch(() => null)) as {
+        message?: string;
+      } | null;
+      setError(body?.message ?? "Case could not be created.");
+      setIsSubmitting(false);
       return;
     }
 
-    startTransition(async () => {
-      const response = await fetch("/api/cases", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, description }),
-      });
-      const result = (await response.json()) as {
-        caseId?: string;
-        message?: string;
-      };
+    const body = (await response.json()) as { caseId: string };
+    router.push(`/cases/${body.caseId}`);
+    router.refresh();
+  };
 
-      if (!response.ok || !result.caseId) {
-        setMessage(result.message || "Case could not be created.");
-        return;
-      }
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    await createCase(new FormData(event.currentTarget));
+  };
 
-      setIsOpen(false);
-      router.push(`/cases/${result.caseId}`);
-      router.refresh();
-    });
+  const handleCreateClick = async () => {
+    const form = formRef.current;
+    if (!form || !form.reportValidity()) return;
+
+    await createCase(new FormData(form));
   };
 
   return (
     <>
       <button
         type="button"
-        onClick={() => setIsOpen(true)}
+        onClick={() => {
+          setIsOpen(true);
+        }}
         className="flex items-center gap-2 rounded-[8px] bg-[var(--accent-green)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-green-hover)]"
       >
         <Plus className="h-4 w-4" />
@@ -65,14 +76,20 @@ export default function CreateCaseButton() {
               </h2>
               <button
                 type="button"
-                onClick={() => setIsOpen(false)}
+                onClick={closeDialog}
                 className="grid h-8 w-8 place-items-center rounded-[6px] text-[var(--text-muted)] transition hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
                 aria-label="Close create case dialog"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <form onSubmit={handleSubmit} className="p-6">
+            <form
+              ref={formRef}
+              action="/api/cases"
+              method="post"
+              onSubmit={handleSubmit}
+              className="p-6"
+            >
               <div className="mb-4">
                 <label htmlFor="case-title" className="mb-2 block text-sm font-medium text-[var(--text-primary)]">
                   Case Title
@@ -99,26 +116,26 @@ export default function CreateCaseButton() {
                   placeholder="What is this case about?"
                 />
               </div>
-              {message ? (
-                <p className="danger-callout mb-4 flex items-start gap-2 rounded-[8px] p-3 text-sm">
-                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                  {message}
+              {error && (
+                <p className="mb-4 rounded-[8px] border border-[var(--danger-border)] bg-[var(--danger-bg)] px-3 py-2 text-sm text-[var(--danger-text)]">
+                  {error}
                 </p>
-              ) : null}
+              )}
               <div className="flex justify-end gap-3 border-t border-[var(--border-soft)] pt-4">
                 <button
                   type="button"
-                  onClick={() => setIsOpen(false)}
+                  onClick={closeDialog}
                   className="px-4 py-2 text-sm font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 >
                   Cancel
                 </button>
                 <button
-                  type="submit"
-                  disabled={isPending}
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={handleCreateClick}
                   className="flex items-center gap-2 rounded-[8px] bg-[var(--accent-green)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-green-hover)] disabled:opacity-50"
                 >
-                  {isPending ? "Creating..." : "Create Case"}
+                  {isSubmitting ? "Creating..." : "Create Case"}
                 </button>
               </div>
             </form>

@@ -10,8 +10,6 @@ type UserProfile = {
 
 export function TopBar() {
   const [user, setUser] = useState<UserProfile | null>(null);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [hasResolvedTheme, setHasResolvedTheme] = useState(false);
 
   useEffect(() => {
     fetch("/api/user/me")
@@ -21,21 +19,16 @@ export function TopBar() {
   }, []);
 
   useEffect(() => {
-    const storedTheme = localStorage.getItem("theme");
-    setIsDarkMode(
-      storedTheme === "dark" || document.documentElement.classList.contains("dark")
+    document.documentElement.classList.toggle(
+      "dark",
+      localStorage.getItem("theme") === "dark"
     );
-    setHasResolvedTheme(true);
   }, []);
 
-  useEffect(() => {
-    if (!hasResolvedTheme) return;
-    document.documentElement.classList.toggle("dark", isDarkMode);
-    localStorage.setItem("theme", isDarkMode ? "dark" : "light");
-  }, [hasResolvedTheme, isDarkMode]);
-
   const toggleDarkMode = () => {
-    setIsDarkMode((currentMode) => !currentMode);
+    const nextMode = !getThemeSnapshot();
+    document.documentElement.classList.toggle("dark", nextMode);
+    localStorage.setItem("theme", nextMode ? "dark" : "light");
   };
 
   return (
@@ -77,7 +70,8 @@ export function TopBar() {
           title="Toggle Dark Mode"
           aria-label="Toggle dark mode"
         >
-          {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          <Moon className="theme-icon-moon h-4 w-4" />
+          <Sun className="theme-icon-sun hidden h-4 w-4" />
         </button>
 
         <button type="button" className="hidden h-[52px] items-center gap-3 rounded-full px-1.5 pr-2 text-left transition hover:bg-[var(--surface-hover)] min-[520px]:flex">
@@ -100,5 +94,14 @@ export function TopBar() {
         </button>
       </div>
     </header>
+  );
+}
+
+function getThemeSnapshot() {
+  if (typeof document === "undefined") return false;
+
+  return (
+    document.documentElement.classList.contains("dark") ||
+    localStorage.getItem("theme") === "dark"
   );
 }

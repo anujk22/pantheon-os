@@ -14,6 +14,9 @@ export async function updateSettings(data: {
   name: string;
   image?: string;
   systemPrompt?: string;
+  responseStyle?: string;
+  memoryMode?: string;
+  themeMode?: string;
   llmProvider: string;
   llmBaseUrl: string;
   llmApiKey: string;
@@ -25,6 +28,9 @@ export async function updateSettings(data: {
       name: data.name,
       image: data.image,
       systemPrompt: data.systemPrompt,
+      responseStyle: data.responseStyle,
+      memoryMode: data.memoryMode,
+      themeMode: data.themeMode,
       llmProvider: data.llmProvider,
       llmBaseUrl: data.llmBaseUrl,
       llmApiKey: data.llmApiKey,
@@ -35,6 +41,9 @@ export async function updateSettings(data: {
       name: data.name,
       image: data.image,
       systemPrompt: data.systemPrompt,
+      responseStyle: data.responseStyle,
+      memoryMode: data.memoryMode,
+      themeMode: data.themeMode,
       llmProvider: data.llmProvider,
       llmBaseUrl: data.llmBaseUrl,
       llmApiKey: data.llmApiKey,

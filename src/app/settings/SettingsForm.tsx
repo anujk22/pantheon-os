@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
-import { Settings, RefreshCcw, AlertTriangle, Save, CheckCircle, User, MessageSquare } from "lucide-react";
+import { Settings, RefreshCcw, AlertTriangle, Save, CheckCircle, User, MessageSquare, Brain, Palette } from "lucide-react";
 import { resetOnboarding, updateSettings } from "./actions";
 
 export default function SettingsForm({ initialData }: { initialData: any }) {
@@ -14,6 +14,9 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
     name: initialData?.name || "",
     image: initialData?.image || "",
     systemPrompt: initialData?.systemPrompt || "",
+    responseStyle: initialData?.responseStyle || "considerate",
+    memoryMode: initialData?.memoryMode || "summaries",
+    themeMode: initialData?.themeMode || "system",
     llmProvider: initialData?.llmProvider || "lmstudio",
     llmBaseUrl: initialData?.llmBaseUrl || "http://127.0.0.1:1234/v1",
     llmApiKey: initialData?.llmApiKey || "",
@@ -31,6 +34,12 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
     setSaved(false);
     startSaving(() => {
       updateSettings(formData).then(() => {
+        if (formData.themeMode === "dark" || formData.themeMode === "light") {
+          document.documentElement.classList.toggle("dark", formData.themeMode === "dark");
+          localStorage.setItem("theme", formData.themeMode);
+        } else {
+          localStorage.removeItem("theme");
+        }
         setSaved(true);
         setTimeout(() => setSaved(false), 3000);
       });
@@ -157,6 +166,71 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
                 className="form-control min-h-[120px] w-full resize-y px-4 py-3 text-sm shadow-sm"
                 placeholder="Instruct Athena on how she should act, what rules to follow, etc."
               />
+              <p className="mt-2 text-xs leading-relaxed text-[var(--text-muted)]">
+                Saved instructions are injected into Athena's system prompt on every chat.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div>
+                <label className="block text-xs font-semibold text-[var(--text-primary)] uppercase tracking-wider mb-2">
+                  Response Style
+                </label>
+                <select
+                  value={formData.responseStyle}
+                  onChange={e => setFormData({ ...formData, responseStyle: e.target.value })}
+                  className="form-control w-full px-4 py-2.5 text-sm shadow-sm"
+                >
+                  <option value="considerate">Considerate: ask first when ambiguous</option>
+                  <option value="concise">Concise: short answers by default</option>
+                  <option value="operator">Operator: direct execution bias</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[var(--text-primary)] uppercase tracking-wider mb-2">
+                  Memory Mode
+                </label>
+                <select
+                  value={formData.memoryMode}
+                  onChange={e => setFormData({ ...formData, memoryMode: e.target.value })}
+                  className="form-control w-full px-4 py-2.5 text-sm shadow-sm"
+                >
+                  <option value="summaries">Save chat summaries</option>
+                  <option value="manual">Manual memory only</option>
+                  <option value="off">Memory off for new chats</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="soft-surface rounded-[8px] p-4">
+              <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
+                <Brain className="h-4 w-4 text-[var(--accent-green)]" />
+                Conversation Memory
+              </div>
+              <p className="text-sm leading-relaxed text-[var(--text-muted)]">
+                When enabled, completed chats get a compact summary attached to the conversation and saved as memory context for future chats.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 mb-4 mt-8 border-b border-[rgba(174,144,100,0.18)] pb-2 pt-4">
+              <Palette className="w-5 h-5 text-[var(--accent-bronze)]" />
+              <h3 className="font-serif text-xl text-[var(--text-primary)]">Interface</h3>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-[var(--text-primary)] uppercase tracking-wider mb-2">
+                Theme Preference
+              </label>
+              <select
+                value={formData.themeMode}
+                onChange={e => setFormData({ ...formData, themeMode: e.target.value })}
+                className="form-control w-full px-4 py-2.5 text-sm shadow-sm"
+              >
+                <option value="system">Use system setting</option>
+                <option value="light">Light limestone</option>
+                <option value="dark">Emerald Pantheon dark</option>
+              </select>
             </div>
 
             <div className="pt-4 flex items-center justify-between border-t border-[rgba(174,144,100,0.18)] mt-6">
